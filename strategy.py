@@ -1,0 +1,5 @@
+STRATEGIES = [
+    'UMAS',
+    'UMAR',
+    'CE'
+]
