@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pybit import usdt_perpetual
 
-from exceptions import InvalidLongCondition, InvalidShortCondition
+from exceptions import InvalidLongCondition, InvalidShortCondition, InvalidPortoflio
 
 from tools import *
 
@@ -170,7 +170,6 @@ class Strategy:
                     exitPrice
                 )  
 
-
     def runStrategy(self) -> None:
         '''
         runs the strategy
@@ -180,6 +179,9 @@ class Strategy:
 
         if self.shortCondition is None:
             raise InvalidShortCondition('Short Condition cant be None')
+
+        if self.portoflio is None:
+            raise InvalidPortoflio('Portoflio cant be None')
 
         self.data = getData(self.pair, self.timeframe, self.candlesToLooks, self.client).astype('float')
 

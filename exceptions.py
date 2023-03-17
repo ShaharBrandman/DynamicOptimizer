@@ -25,3 +25,7 @@ class InvalidLongCondition(Exception):
 class InvalidShortCondition(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
+
+class InvalidPortoflio(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
