@@ -1,3 +1,6 @@
 {
-    
+    "mongoDbClientURL": "mongodb+srv://admin:admin@cryptotrader.ir5g3pv.mongodb.net/?retryWrites=true&w=majority",
+    "bybitEndpoint": "https://api.bybit.com",
+    "bybitAPIKey": "",
+    "bybitAPISecretKey": ""
 }

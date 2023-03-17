@@ -1,24 +1,31 @@
 import logging
 import sys
+import os
 
 from datetime import datetime
 
-from tools import validateSymbol
-
 from exceptions import InvalidCLIArguement
 
-logging.basicConfig(filename=f'{datetime.now().timestamp()}.txt',
+from tools import validatePair, validateTimeframe, validateStrategy, validateLoops, validateDataset, getStrategy
+
+from optimizer import Optimizer
+
+if os.path.exists('logs') is False:
+    os.mkdir('logs')
+
+def initLogs():
+    logging.basicConfig(filename=f'logs/{datetime.now().timestamp()}.txt',
                             filemode='a',
                             format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S',
                             level=logging.DEBUG)
 
-logging.info()
+    logging.info(f'Running {os.getcwd()}/main.py')
 
 def printHelp():
-    print('arguments are: <symbol: string> <timeframe: string> <candles: int> <strategy: string>\n')
+    print('arguments are: <pair: string> <timeframe: string> <candles back: int> <strategy: string> <loops: int> <dataset: filename (optional)>\n')
     print('--help: to print this message\n')
-    print('possible commands are: --symbol, --timeframe, --strategies\n')
+    print('possible commands are: --pair, --timeframe, --strategies\n')
 
 def printSymbols():
     print('everything on bybit\n')
@@ -29,10 +36,26 @@ def printTimeFrames():
 def printStrategies():
     print('UMAS: Ultimate Moving Average Strategy, has a Ultimate Moving average that signals long and shorts\n')
     print('UMAR: Ultimate MA ADX RSI Strategy,\nLong Condition: RSI > X, ADX > Y, UMA LONG\nShortCondition: RSI < X, ADX > Y, UMA SHORT\n')
-    print('')
-args = sys.argv
-try:
+    print('ZLSMA + CE: ZLSMA + Chandelier Exit,\nLong Condition: ZLSMA > PRICE, CE == 1 and preivousCE == -1,\nShort Condition: ZLSMA < PRICE, CE == -1 and previousCE == 1\n')
 
+args = sys.argv
+args = args[1:]
+
+try:
+    if len(args) > 1:
+        validatePair(args[0])
+        validateTimeframe(args[1])
+        validateStrategy(args[2])
+        validateLoops(args[3])
+
+        if len(args) > 4:
+            validateDataset(args[4])
+
+        initLogs()
+
+        o = Optimizer(args[0], args[1], getStrategy(args[2]))
+    else:
+        raise InvalidCLIArguement('Must enter arguments')
 except InvalidCLIArguement as e:
     printHelp()
     print(e)

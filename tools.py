@@ -10,7 +10,9 @@ from datetime import timedelta
 from pybit import usdt_perpetual
 from pybit import exceptions
 
-def getData(coin: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) -> pd.DataFrame:
+from strategy import Strategy
+
+def getData(pair: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) -> pd.DataFrame:
     postMin = 0
     data = None
 
@@ -20,21 +22,21 @@ def getData(coin: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) 
         while True:
             try:
                 tmp = client.query_kline(
-                    symbol = f'{coin}USDT',
+                    symbol = pair,
                     interval = timeframe,
                     from_time = int(t.timestamp())
                 )
                 break
             except requests.exceptions.ConnectionError as e:
-                logging.debug(f'{coin} ConnectionError fetching data: {e}')
+                logging.debug(f'{pair} ConnectionError fetching data: {e}')
                 time.sleep(1)
                 continue
             except requests.exceptions.RequestException as e:
-                logging.debug(f'{coin} RequestException fetching data: {e}')
+                logging.debug(f'{pair} RequestException fetching data: {e}')
                 time.sleep(1)
                 continue
             except requests.exceptions.ReadTimeout as e:
-                logging.debug(f'{coin} ReadTimeout fetching data: {e}')
+                logging.debug(f'{pair} ReadTimeout fetching data: {e}')
                 time.sleep(1)
                 continue
 
@@ -63,3 +65,30 @@ def getData(coin: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) 
         #time.sleep(0.1)
 
     return data
+
+def getConfig() -> any:
+    pass
+
+def validatePair(pair: str) -> None:
+    pass
+
+def validateTimeframe(timeframe: str) -> None:
+    pass
+
+def validateStrategy(strat: str) -> None:
+    pass
+
+def validateLoops(loops: str) -> None:
+    pass
+
+def validateDataset(dataset: str) -> None:
+    pass
+
+def getStrategy(name: str) -> Strategy:
+    pass
+
+def validateSrc(src: str) -> None:
+    pass
+
+def getClosedPosition(portoflio: dict, position: dict, ExitPrice: float) -> dict:
+    pass
