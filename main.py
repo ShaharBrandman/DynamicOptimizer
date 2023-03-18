@@ -53,7 +53,13 @@ try:
 
         initLogs()
 
-        o = Optimizer(args[0], args[1], getStrategy(args[2]))
+        o = Optimizer(
+            {
+
+            }
+        )
+
+        
     else:
         raise InvalidCLIArguement('Must enter arguments')
 except InvalidCLIArguement as e:

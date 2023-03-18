@@ -1,3 +1,10 @@
+'''
+TradingOptimizer/strategy.py
+
+Contains the basic abstract interface of a strategy
+
+Author: ShaharBrandman (2023)
+'''
 import pandas as pd
 
 from datetime import datetime
@@ -15,7 +22,8 @@ class Strategy:
     @pair: BTCUSDT, ETHUSDT, DOGEUSDT, ADAUSDT\n
     @timeframe: 1, 5, 15, 30, 60\n
     @candlesToLooks: default = 1000\n
-    \b
+    @dataset: default = None\n
+    
     Interface Functions\n
      * setLongConditions(function) required\n
      * setShortConditions(function) required\n
@@ -23,7 +31,7 @@ class Strategy:
      * setTakeProfitAndStopLoss(function)
     '''
 
-    def __init__(self, src: str, pair: str, timeframe: str, candlesToLooks: int = 1000) -> None:
+    def __init__(self, src: str, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset = pd.DataFrame = None) -> None:
         #validateSrc(src)
         #validatePair(pair)
         #validateTimeframe(timeframe)
@@ -32,6 +40,9 @@ class Strategy:
         self.pair = pair
         self.timeframe = timeframe
         self.candlesToLooks = candlesToLooks
+
+        if dataset != None:
+            self.data = dataset
 
         c = getConfig()
 
@@ -61,7 +72,7 @@ class Strategy:
         sets equity, leverage and commision and percentPerPosition (optional)
         '''
 
-        self.startingEquity = equity
+        self.budget = (self.equity * percentPerPosition) / 100
 
         self.portoflio = {
             'equity': equity,
@@ -91,7 +102,7 @@ class Strategy:
             takeprofit, stoploss = self.takeprofitstoploss()
 
             self.positions.append({
-                'ID': self.data['interval'][index],
+                'ID': self.data['open_time'][index],
                 'State': 'OPEN',
                 'type': 'Long',
                 'Entry': self.data[self.src][index],
@@ -102,7 +113,7 @@ class Strategy:
             })
         else:
             self.positions.append({
-                'ID': self.data['interval'][index],
+                'ID': self.data['open_time'][index],
                 'State': 'OPEN',
                 'type': 'Long',
                 'Exit': 'On Short Condition'
@@ -152,10 +163,12 @@ class Strategy:
                     exitPrice = sl
 
                 self.closedPositions.append(
-                    self.portoflio,
-                    self.positions[i],
-                    exitPrice
-                )
+                    getClosedPosition(
+                        self.portoflio,
+                        self.positions[i],
+                        exitPrice
+                    )
+                ) 
 
             if self.positions[i]['type'] == 'Short':
                 exitPrice = 0
@@ -165,10 +178,35 @@ class Strategy:
                     exitPrice = sl
 
                 self.closedPositions.append(
-                    self.portoflio,
-                    self.positions[i],
-                    exitPrice
+                    getClosedPosition(
+                        self.portoflio,
+                        self.positions[i],
+                        exitPrice
+                    )
                 )  
+
+    def backtest(self) -> None:
+        wins = 0
+        losses = 0
+        
+        for e in self.closedPositions:
+            if e['PNL'] > 0:
+                wins += 1
+
+                self.budget = (self.budget * (100 + e['PNL'])) / 100 #add PNL to budget
+                self.budget = (self.budget * (100 - self.portoflio.commision)) #clean commision
+            else:
+                losses += 1
+
+                self.budget = (self.budget * (100 - e['PNL'])) / 100 #minus PNL to budget
+                self.budget = (self.budget * (100 - self.portoflio.commision)) #clean commision :(
+
+        totalPNL = (self.budget * 100) / self.equity
+        accuracy = (wins * 100) / wins + losses
+
+        with open(f'{self.pair}-{self.timeframe}-{accuracy}-{totalPNL}-{self.portoflio.leverage}-{wins + losses}-{self.timestamp}.csv', 'w') as f:
+            f.write(self.closedPositions)
+            f.close()
 
     def runStrategy(self) -> None:
         '''
@@ -183,18 +221,40 @@ class Strategy:
         if self.portoflio is None:
             raise InvalidPortoflio('Portoflio cant be None')
 
-        self.data = getData(self.pair, self.timeframe, self.candlesToLooks, self.client).astype('float')
+        if self.data == None:
+            self.data = getData(self.pair, self.timeframe, self.candlesToLooks, self.client).astype('float')
 
         self.data['longConditions'] = self.longConditions(self.data)
         self.data['shortConditions'] = self.shortConditions(self.data)
 
-        with open(f'{self.pair}-{self.timeframe}-{datetime.now().timestamp()}-data', 'w') as f:
-            f.write(self.data.to_csv())
+        self.timestamp = datetime.now().timestamp()
 
+        #save dataset as a file
+        with open(f'{self.pair}-{self.timeframe}-{self.candlesToLooks}-{self.timestamp}-dataset', 'w') as f:
+            f.write(self.data.to_csv())
+            f.close()
+
+        '''
+        positions structure:
+            * ID
+            * State
+            * Type
+            * Entry
+            * Exit
+        '''
         self.positions = []
+
+        '''
+        closed positions structure:
+            * ID
+            * Type
+            * PNL
+            * Entry
+            * Exit
+        '''
         self.closedPositions = []
 
-        for index in range(len(self.data['shortConditions'])):
+        for index in range(len(self.data['longConditions'])):
             if self.data['longConditions'][index] == 1:
                 self.onLongCondition()
 
@@ -203,4 +263,4 @@ class Strategy:
 
             self.checkPositions(index)
 
-        
+        self.backtest()

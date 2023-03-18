@@ -1,6 +1,7 @@
 import logging
 import time
 import requests
+import json
 
 import pandas as pd
 
@@ -67,7 +68,8 @@ def getData(pair: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) 
     return data
 
 def getConfig() -> any:
-    pass
+    with open('config.json', 'r') as f:
+        f.read(json.loads(r))
 
 def validatePair(pair: str) -> None:
     pass
@@ -90,5 +92,5 @@ def getStrategy(name: str) -> Strategy:
 def validateSrc(src: str) -> None:
     pass
 
-def getClosedPosition(portoflio: dict, position: dict, ExitPrice: float) -> dict:
+def getClosedPosition(leverage: int, position: dict, ExitPrice: float) -> dict:
     pass
