@@ -5,6 +5,7 @@ Contains the basic abstract interface of a strategy
 
 Author: ShaharBrandman (2023)
 '''
+import csv
 import pandas as pd
 
 from datetime import datetime
@@ -31,11 +32,7 @@ class Strategy:
      * setTakeProfitAndStopLoss(function)
     '''
 
-    def __init__(self, src: str, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset = pd.DataFrame = None) -> None:
-        #validateSrc(src)
-        #validatePair(pair)
-        #validateTimeframe(timeframe)
-        
+    def __init__(self, src: str, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset: pd.DataFrame = None) -> None:
         self.src = src
         self.pair = pair
         self.timeframe = timeframe
@@ -205,8 +202,9 @@ class Strategy:
         accuracy = (wins * 100) / wins + losses
 
         with open(f'{self.pair}-{self.timeframe}-{accuracy}-{totalPNL}-{self.portoflio.leverage}-{wins + losses}-{self.timestamp}.csv', 'w') as f:
-            f.write(self.closedPositions)
-            f.close()
+            w = csv.writer(f, delimiter=',')
+            w.writerows(self.closedPositions) 
+            f.close()   
 
     def runStrategy(self) -> None:
         '''

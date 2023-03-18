@@ -6,7 +6,7 @@ from datetime import datetime
 
 from exceptions import InvalidCLIArguement
 
-from tools import validatePair, validateTimeframe, validateStrategy, validateLoops, validateDataset, getStrategy
+from tools import validateDataset
 
 from optimizer import Optimizer
 
@@ -42,12 +42,7 @@ args = sys.argv
 args = args[1:]
 
 try:
-    if len(args) > 1:
-        validatePair(args[0])
-        validateTimeframe(args[1])
-        validateStrategy(args[2])
-        validateLoops(args[3])
-
+    if len(args) > 3:
         if len(args) > 4:
             validateDataset(args[4])
 

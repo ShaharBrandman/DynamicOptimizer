@@ -67,29 +67,11 @@ def getData(pair: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) 
 
     return data
 
-def getConfig() -> any:
+def getConfig() -> dict:
     with open('config.json', 'r') as f:
-        f.read(json.loads(r))
-
-def validatePair(pair: str) -> None:
-    pass
-
-def validateTimeframe(timeframe: str) -> None:
-    pass
-
-def validateStrategy(strat: str) -> None:
-    pass
-
-def validateLoops(loops: str) -> None:
-    pass
+        return json.loads(f.read())
 
 def validateDataset(dataset: str) -> None:
-    pass
-
-def getStrategy(name: str) -> Strategy:
-    pass
-
-def validateSrc(src: str) -> None:
     pass
 
 def getClosedPosition(leverage: int, position: dict, ExitPrice: float) -> dict:
