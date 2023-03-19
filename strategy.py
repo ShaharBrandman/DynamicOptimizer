@@ -33,6 +33,7 @@ class Strategy:
     '''
 
     def __init__(self, src: str, pair: str, timeframe: str, candlesToLooks: int = 1000, dataframe: pd.DataFrame = None) -> None:
+        self.ID = f'{src}-{pair}-{timeframe}-{candlesToLooks}-{datetime.now().timestamp()}'
         self.src = src
         self.pair = pair
         self.timeframe = timeframe
@@ -219,7 +220,7 @@ class Strategy:
         totalPNL = (self.budget * 100) / self.equity
         accuracy = (wins * 100) / wins + losses
 
-        with open(f'{self.pair}-{self.timeframe}-{accuracy}-{totalPNL}-{self.portoflio.leverage}-{wins + losses}-{self.timestamp}.csv', 'w') as f:
+        with open(f'{self.ID}-{accuracy}-{totalPNL}-{self.portoflio.leverage}-{wins + losses}.csv', 'w') as f:
             w = csv.writer(f, delimiter=',')
             w.writerows(self.closedPositions) 
             f.close()   
@@ -243,10 +244,8 @@ class Strategy:
         self.data['longConditions'] = self.longConditions(self.data)
         self.data['shortConditions'] = self.shortConditions(self.data)
 
-        self.timestamp = datetime.now().timestamp()
-
         #save dataset as a file
-        with open(f'{self.pair}-{self.timeframe}-{self.candlesToLooks}-{self.timestamp}-dataset', 'w') as f:
+        with open(f'{self.ID}-dataset', 'w') as f:
             f.write(self.data.to_csv())
             f.close()
 
