@@ -13,6 +13,12 @@ from optimizer import Optimizer
 if os.path.exists('logs') is False:
     os.mkdir('logs')
 
+if os.path.exists('closedPositions') is False:
+    os.mkdir('closedPositions')
+
+if os.path.exists('datasets') is False:
+    os.mkdir('datasets')
+
 def initLogs():
     logging.basicConfig(filename=f'logs/{datetime.now().timestamp()}.txt',
                             filemode='a',

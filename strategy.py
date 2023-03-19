@@ -220,7 +220,7 @@ class Strategy:
         totalPNL = (self.budget * 100) / self.equity
         accuracy = (wins * 100) / wins + losses
 
-        with open(f'{self.ID}-{accuracy}-{totalPNL}-{self.portoflio.leverage}-{wins + losses}.csv', 'w') as f:
+        with open(f'closedPositions/{self.ID}-{accuracy}-{totalPNL}-{self.portoflio.leverage}-{wins + losses}-closedPositions.csv', 'w') as f:
             w = csv.writer(f, delimiter=',')
             w.writerows(self.closedPositions) 
             f.close()   
@@ -245,7 +245,7 @@ class Strategy:
         self.data['shortConditions'] = self.shortConditions(self.data)
 
         #save dataset as a file
-        with open(f'{self.ID}-dataset', 'w') as f:
+        with open(f'datasets/{self.ID}-dataset', 'w') as f:
             f.write(self.data.to_csv())
             f.close()
 
