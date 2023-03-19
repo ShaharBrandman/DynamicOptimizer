@@ -25,3 +25,7 @@ class InvalidShortCondition(Exception):
 class InvalidPortoflio(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
+
+class InvalidDataset(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)

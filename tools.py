@@ -2,6 +2,7 @@ import logging
 import time
 import requests
 import json
+import os
 
 import pandas as pd
 
@@ -12,6 +13,9 @@ from pybit import usdt_perpetual
 from pybit import exceptions
 
 from strategy import Strategy
+from strategies import Strategies
+
+from exceptions import *
 
 def getData(pair: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) -> pd.DataFrame:
     postMin = 0
@@ -71,8 +75,56 @@ def getConfig() -> dict:
     with open('config.json', 'r') as f:
         return json.loads(f.read())
 
-def validateDataset(dataset: str) -> None:
-    pass
+def validateDataset(pathToDataset: str) -> None:
+    if pathToDataset is None:
+        raise InvalidDataset('Path to dataset cannot be None')
+
+    if os.path.exists(pathToDataset):
+        data = pd.read_csv(pathToDataset)
+        
+        validateDataFrame(data)
+
+    raise InvalidDataset('Path to dataset doesnt exists')
+
+def validateDataFrame(dataset: pd.DataFrame) -> None:
+    if dataset is None:
+        raise InvalidDataset('Dataset cannot be None')
+
+    columns = [
+        'symbol',
+        'interval', 
+        'open_time', 
+        'open',
+        'high', 
+        'low', 
+        'close', 
+        'volume', 
+        'turnover'
+    ]
+
+    if columns not in dataset:
+        raise InvalidDataset(f'Dataset must include the colums: {columns}')
 
 def getClosedPosition(leverage: int, position: dict, ExitPrice: float) -> dict:
-    pass
+    PNL = 0.0
+    if position['Type'] == 'Long':
+        PNL = ((ExitPrice * 100) / position['Entry']) - 100
+    else:
+        PNL = 100 - ((ExitPrice * 100) / position['Entry'])
+
+    PNL *= leverage
+
+    return {
+        'ID': position['ID'],
+        'State': 'CLOSED',
+        'Type': position['Type'],
+        'PNL': PNL,
+        'Entry': position['Entry'],
+        'Exit': ExitPrice
+    }
+
+def getStrategyByInput(input: str) -> Strategy:
+    if input not in Strategies:
+        raise InvalidStrategy(f'{input} is not a valid Strategy')
+    
+    return Strategies[input]

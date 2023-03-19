@@ -1,7 +1,11 @@
+from threading import Thread
+
 from strategy import Strategy
 
-class Optimizer:
-    def __init__(self, params: dict) -> None:
+from tools import getStrategy
+
+class Optimizer(Thread):
+    def __init__(self, strategy: Strategy, params: dict) -> None:
         pass
 
     def run() -> None:

@@ -1,0 +1,40 @@
+{
+    "UMAR": {
+        "Source": "close",
+        "MA-Length": 20,
+        "MA-Type": 1
+    },
+    "UMAS": {
+        "Source": "close",
+        "MA-Length": 20,
+        "MA-Type": 1,
+        "ADX-Cross": 20,
+        "ADX-Length": 14,
+        "RSI-Length": 14,
+        "RSI-UpperLevel": 70,
+        "RSI-LowerLevel": 30,
+        "ATR-Bands-Length": 14,
+        "ATR-UpperBand-Source": "close",
+        "ATR-LowerBand-Source": "close",
+        "ATR-UpperBand-Multiplier": 2.5,
+        "ATR-LowerBand-Multiplier": 2.5,
+        "TPSL": {
+            "useTakeProfit": false,
+            "useATRBands": false,
+            "Risk/Reward-Ratio": 1.5,
+            "TakeProfit": 1,
+            "StopLoss": 0.5
+        }
+    },
+    "CE": {
+        "Source": "close",
+        "ZLSMA-Length": 50,
+        "ChandelierExit-Length": 22,
+        "ChandelierExit-Multiplier": 3.0,
+        "TPSL": {
+            "useTakeProfit": false,
+            "TakeProfit": 0.5,
+            "StopLoss": 0.4
+        }
+    }
+}

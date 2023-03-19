@@ -14,7 +14,7 @@ from pybit import usdt_perpetual
 
 from exceptions import InvalidLongCondition, InvalidShortCondition, InvalidPortoflio
 
-from tools import *
+from tools import getClosedPosition, getConfig, getData, validateDataFrame
 
 class Strategy:
     '''
@@ -32,14 +32,15 @@ class Strategy:
      * setTakeProfitAndStopLoss(function)
     '''
 
-    def __init__(self, src: str, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset: pd.DataFrame = None) -> None:
+    def __init__(self, src: str, pair: str, timeframe: str, candlesToLooks: int = 1000, dataframe: pd.DataFrame = None) -> None:
         self.src = src
         self.pair = pair
         self.timeframe = timeframe
         self.candlesToLooks = candlesToLooks
 
-        if dataset != None:
-            self.data = dataset
+        if dataframe != None:
+            validateDataFrame(dataframe)
+            self.data = dataframe
 
         c = getConfig()
 
@@ -91,6 +92,7 @@ class Strategy:
 
         for i in range(self.positions):
             if self.positions[i]['Exit'] == 'On Long Condition':
+                self.positions[i]['Status'] = 'CLOSED'
                 self.closedPositions.append(
                     getClosedPosition(self.portoflio, self.positions[i], currentCandle)
                 )
@@ -121,6 +123,7 @@ class Strategy:
 
         for i in range(self.positions):
             if self.positions[i]['Exit'] == 'On Long Condition':
+                self.positions[i]['Status'] = 'CLOSED'
                 self.closedPositions.append(
                     getClosedPosition(self.portoflio, self.positions[i], currentCandle)
                 )
@@ -148,16 +151,25 @@ class Strategy:
 
     def checkPositions(self, currentIndex) -> None:
         for i in range(len(self.positions)):
+            if self.positions['Status'] != 'OPEN':
+                continue
             tp = self.positions[i]['Exit']['TakeProfit']
             sl = self.positions[i]['Exit']['StopLoss']
 
             #long position
-            if self.positions[i]['type'] == 'Long':
+            if self.positions[i]['Type'] == 'Long':
                 exitPrice = 0
+
+                #win
                 if self.data['high'][currentIndex] >= tp or self.data['close'][currentIndex] >= tp:
                     exitPrice = tp
+                #loss
                 elif self.data['low'][currentIndex] <= sl or self.data['close'][currentIndex] <= sl:
                     exitPrice = sl
+                else:
+                    continue
+
+                self.positions[i]['Status'] = 'CLOSED'
 
                 self.closedPositions.append(
                     getClosedPosition(
@@ -167,12 +179,18 @@ class Strategy:
                     )
                 ) 
 
-            if self.positions[i]['type'] == 'Short':
+            if self.positions[i]['Type'] == 'Short':
                 exitPrice = 0
+                #win
                 if self.data['low'][currentIndex] <= tp or self.data['close'][currentIndex] <= tp:
                     exitPrice = tp
+                #loss
                 elif self.data['high'][currentIndex] >= sl or self.data['close'][currentIndex] >= sl:
                     exitPrice = sl
+                else:
+                    continue
+
+                self.positions[i]['Status'] = 'CLOSED'
 
                 self.closedPositions.append(
                     getClosedPosition(
@@ -237,18 +255,19 @@ class Strategy:
             * ID
             * State
             * Type
-            * Entry
-            * Exit
+            * Entry [float]
+            * Exit [TakeProfit, StopLoss or when condition changed]
         '''
         self.positions = []
 
         '''
         closed positions structure:
             * ID
+            * State
             * Type
             * PNL
-            * Entry
-            * Exit
+            * Entry [float]
+            * Exit [float]
         '''
         self.closedPositions = []
 
