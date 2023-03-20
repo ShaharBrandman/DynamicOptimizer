@@ -1,12 +1,8 @@
-class InvalidCLIArguement(Exception):
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)
-
 class StrategyNotExists(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
-class InvalidStrategy(Exception):
+class InvalidStrategyParams(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 

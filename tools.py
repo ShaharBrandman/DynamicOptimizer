@@ -10,7 +10,6 @@ from datetime import datetime
 from datetime import timedelta
 
 from pybit import usdt_perpetual
-from pybit import exceptions
 
 from strategy import Strategy
 from strategies import Strategies
@@ -72,8 +71,7 @@ def getData(pair: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) 
     return data
 
 def getConfig() -> dict:
-    with open('config.json', 'r') as f:
-        return json.loads(f.read())
+    return json.loads(open('config.json', 'r').read())
 
 def validateDataset(pathToDataset: str) -> None:
     if pathToDataset is None:
@@ -125,6 +123,12 @@ def getClosedPosition(leverage: int, position: dict, ExitPrice: float) -> dict:
 
 def getStrategyByInput(input: str) -> Strategy:
     if input not in Strategies:
-        raise InvalidStrategy(f'{input} is not a valid Strategy')
+        raise StrategyNotExists(f'{input} doesnot exists!')
     
     return Strategies[input]
+
+def getRunJson() -> dict:
+    return json.loads(open('run.json', 'r').read())
+
+def randomizeParams(paramsToRandomize: dict) -> dict:
+    pass

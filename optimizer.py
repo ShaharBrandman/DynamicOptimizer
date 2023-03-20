@@ -1,4 +1,5 @@
-import os
+import json
+import logging
 
 import pandas as pd
 
@@ -10,19 +11,19 @@ from tools import randomizeParams
 
 class Optimizer(Thread):
     def __init__(self, portfolio: dict, strategy: Strategy, paramsToRandomize: dict, loops: int = 1000) -> None:
-        self.strategy = strategy
         self.portfolio = portfolio
+        self.strategy = strategy
         self.paramsToRandomize = paramsToRandomize
         self.loops = loops
 
-        self.bestProfit = {
-            0.0,
-            []
+        self.bestPNL = {
+            'PNL': 0.0,
+            'params': None
         }
 
         self.bestAccuracy = {
-            0.0,
-            []
+            'accuracy': 0.0,
+            'params': None
         }
 
     def run(self) -> None:
@@ -40,5 +41,27 @@ class Optimizer(Thread):
             strategyID = self.strategy.ID
             self.strategy.runStrategy()
 
-            f = os.listdir('closedPositions/')
+            status = json.loads(open(f'output/strategiesStats/{strategyID}.json', 'r').read())
+            
+            if status['PNL'] >= self.bestPNL['PNL']:
+                self.bestPNL['PNL'] = status['PNL']
+                self.bestPNL['params'] = self.paramsToRandomize
+
+            if status['accuracy'] >= self.bestAccuracy['accuracy']:
+                self.bestAccuracy['accuracy'] = status['accuracy']
+                self.bestAccuracy['params'] = self.paramsToRandomize
+
+            print(f'loop #{i}, params: {self.paramsToRandomize}, PNL: {status["PNL"]}%, Accuracy: {status["accuracy"]}%\n')
+            logging.debug(f'loop #{i}, params: {self.paramsToRandomize}, PNL: {status["PNL"]}%, Accuracy: {status["accuracy"]}%')
+
+        logging.debug(f'bestPNL: {self.bestPNL["PNL"]}, params: {self.bestPNL["params"]}')
+        logging.debug(f'bestAccuracy: {self.bestAccuracy["accuracy"]}, params: {self.bestPNL["params"]}')
+
+        print(f'bestPNL: {self.bestPNL["PNL"]}, params: {self.bestPNL["params"]}\n')
+        print(f'bestAccuracy: {self.bestAccuracy["accuracy"]}, params: {self.bestPNL["params"]}\n')
+
+            
+
+        
+                    
             
