@@ -73,20 +73,18 @@ def getData(pair: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) 
 def getConfig() -> dict:
     return json.loads(open('config.json', 'r').read())
 
-def validateDataset(pathToDataset: str) -> None:
+def validateDataset(pathToDataset: str) -> pd.DataFrame:
     if pathToDataset is None:
         raise InvalidDataset('Path to dataset cannot be None')
 
     if os.path.exists(pathToDataset):
         data = pd.read_csv(pathToDataset)
         
-        validateDataFrame(data)
+        if data is None:
+            raise InvalidDataset(f'data from {pathToDataset} cannot be None')
 
-    raise InvalidDataset('Path to dataset doesnt exists')
-
-def validateDataFrame(dataset: pd.DataFrame) -> None:
-    if dataset is None:
-        raise InvalidDataset('Dataset cannot be None')
+    else:
+        raise InvalidDataset('Path to dataset doesnt exists')
 
     columns = [
         'symbol',
@@ -100,8 +98,10 @@ def validateDataFrame(dataset: pd.DataFrame) -> None:
         'turnover'
     ]
 
-    if columns not in dataset:
+    if columns not in data:
         raise InvalidDataset(f'Dataset must include the colums: {columns}')
+    
+    return data
 
 def getClosedPosition(leverage: int, position: dict, ExitPrice: float) -> dict:
     PNL = 0.0

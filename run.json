@@ -6,7 +6,7 @@
         "Pair": "<Examples: BTCUSDT, ETHUSDT>",
         "Timeframe": "<Examples: 1, 5, 15 for 1min, 5mins and 15mins>",
         "candlesToLooks": "<10000?>",
-        "dataset": "<Example: output/datasets/69.csv>"
+        "dataset": "<Example: output/datasets/69.csv or Leave blank>"
     },
     "Optimizer": {
         "loops": "<420696?>"
