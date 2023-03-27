@@ -1,13 +1,15 @@
 {
-    "UMAR": {
-        "Source": "close",
-        "MA-Length": 20,
-        "MA-Type": 1
-    },
     "UMAS": {
         "Source": "close",
         "MA-Length": 20,
         "MA-Type": 1,
+        "Smoothing": 1
+    },
+    "UMAR": {
+        "Source": "close",
+        "MA-Length": 20,
+        "MA-Type": 1,
+        "Smoothing": 1,
         "ADX-Cross": 20,
         "ADX-Length": 14,
         "RSI-Length": 14,

@@ -3,6 +3,7 @@ import time
 import requests
 import json
 import os
+import random
 
 import pandas as pd
 
@@ -131,4 +132,60 @@ def getRunJson() -> dict:
     return json.loads(open('run.json', 'r').read())
 
 def randomizeParams(paramsToRandomize: dict) -> dict:
-    pass
+    for i in range(len(paramsToRandomize)):
+        if type(paramsToRandomize[i]) == str:
+            s = ['close', 'open', 'high', 'low']
+            r = random.randint(0, len(s))
+
+            paramsToRandomize[i] = s[r]
+        elif type(paramsToRandomize[i]) == 'float':
+            r = random.randrange(0.0, 100.0)
+            paramsToRandomize[i] = r
+        elif type(paramsToRandomize[i]) == 'int':
+            r = random.randint(0, 100)
+            paramsToRandomize[i] = r
+        elif type(paramsToRandomize[i]) == 'bool':
+            s = [True, False]
+            r = random.randint(0, 1)
+
+            paramsToRandomize[i] = s[r]
+        elif type(paramsToRandomize[i]) == 'dict':
+            paramsToRandomize[i] = randomizeParams[paramsToRandomize[i]]
+
+    return paramsToRandomize
+
+def getStrategyParamsByInput(input: str) -> dict:
+    return json.loads(open('strategies.json', 'r').read())[input]
+
+def validateParams(self: Strategy, params: dict) -> None:
+    for e in Strategies:
+        if e is self:
+            sParams = getStrategyParamsByInput(e.__class__.__name__)
+
+            for j in sParams:
+                if j not in params:
+                    raise InvalidParams(f'{j} Parameter is not in params')
+                
+    raise InvalidParams(f'{self} is not in Strategies.py')
+
+def validatePortfolio(portfolio: dict) -> None:
+    if 'Equity' in portfolio:
+        if portfolio['Equity'] <= 0:
+            raise InvalidPortoflio('Portfolio Equity cannot be less or equal to 0')
+    else:
+        raise InvalidPortoflio('Portfolio doesnt have Equity attribute')
+    
+    if 'Leverage' in portfolio:
+        if portfolio['Leverage'] < 0:
+            raise InvalidPortoflio('Portfolio Leverage cannot be less then 0, (can be 0 tho)')
+    
+    if 'Commision' in portfolio:
+        if portfolio['Commision'] < 0:
+            raise InvalidPortoflio('Portfolio Commission cannot be less then 0')
+        
+    if 'PercentPerPosition' in portfolio:
+        if portfolio['PercentPerPosition'] <= 0:
+            raise InvalidPortoflio('PercentPerPosition cannot be less or equal to 0 brother')
+    else:
+        raise InvalidPortoflio('Portfolio doesnt have PercentPerPosition attribute')
+        

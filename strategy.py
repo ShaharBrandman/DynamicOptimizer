@@ -32,9 +32,8 @@ class Strategy:
      * setTakeProfitAndStopLoss(function)
     '''
 
-    def __init__(self, src: str, pair: str, timeframe: str, candlesToLooks: int = 1000, dataframe: pd.DataFrame = None) -> None:
-        self.ID = f'{src}-{pair}-{timeframe}-{candlesToLooks}-{datetime.now().timestamp()}'
-        self.src = src
+    def __init__(self, pair: str, timeframe: str, candlesToLooks: int = 1000, dataframe: pd.DataFrame = None) -> None:
+        self.ID = f'{pair}-{timeframe}-{candlesToLooks}-{datetime.now().timestamp()}'
         self.pair = pair
         self.timeframe = timeframe
         self.candlesToLooks = candlesToLooks
@@ -52,6 +51,9 @@ class Strategy:
         )
 
     def setLongConditions(self, defintion: callable) -> None:
+        if type(defintion) != callable:
+            raise InvalidLongCondition(f'defintion cant be of type: {type(defintion)}')
+
         '''
         @required = true \n
         define how to calculate long conditions
@@ -59,25 +61,28 @@ class Strategy:
         self.longConditions = defintion
 
     def setShortConditions(self, defintion: callable) -> None:
+        if type(defintion) != callable:
+            raise InvalidLongCondition(f'defintion cant be of type: {type(defintion)}')
+
         '''
         @required = true \n
         define how to calculate short conditions
         '''
         self.shortConditions = defintion
 
-    def setPortfolio(self, equity: float, leverage: int, commision: float, percentPerPosition: float = 100) -> None:
+    def setPortfolio(self, equity: float, leverage: int, commision: float, PercentPerPosition: float = 100) -> None:
         '''
         @required = true\
-        sets equity, leverage and commision and percentPerPosition (optional)
+        sets equity, leverage and commision and PercentPerPosition (optional)
         '''
 
-        self.budget = (self.equity * percentPerPosition) / 100
+        self.budget = (self.equity * PercentPerPosition) / 100
 
         self.portoflio = {
             'equity': equity,
             'leverage': leverage,
             'commision': commision,
-            'percentPerPosition': percentPerPosition
+            'PercentPerPosition': PercentPerPosition
         }
 
     def setTakeProfitAndStopLoss(self, defintion: callable) -> None:

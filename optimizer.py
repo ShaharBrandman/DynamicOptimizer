@@ -7,10 +7,12 @@ from threading import Thread
 
 from strategy import Strategy
 
-from tools import randomizeParams
+from tools import randomizeParams, validatePortfolio
 
 class Optimizer(Thread):
     def __init__(self, portfolio: dict, strategy: Strategy, paramsToRandomize: dict, loops: int = 1000) -> None:
+        validatePortfolio(portfolio)
+        
         self.portfolio = portfolio
         self.strategy = strategy
         self.paramsToRandomize = paramsToRandomize
@@ -32,7 +34,12 @@ class Optimizer(Thread):
 
             self.strategy.setLongConditions(self.paramsToRandomize)
             self.strategy.setShortConditions(self.paramsToRandomize)
-            self.strategy.setPortfolio(self.portfolio)
+            self.strategy.setPortfolio(
+                self.portfolio['Equity'],
+                self.portfolio['Leverage'],
+                self.portfolio['Commision'],
+                self.portfolio['PercentPerPosition']
+            )
             
             if 'TPSL' in self.paramsToRandomize:
                 if self.paramsToRandomize['TPSL']['useTakeProfit'] == True:

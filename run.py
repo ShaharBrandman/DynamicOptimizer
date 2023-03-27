@@ -38,7 +38,6 @@ settings = getRunJson()
 s = getStrategyByInput(
     settings['Strategy']['NAME']
 ).__init__(
-    settings['Strategy']['Source'],
     settings['Strategy']['Pair'],
     settings['Strategy']['Timeframe'],
     settings['Strategy']['candlesToLooks'],

@@ -2,7 +2,6 @@
     "Strategy": {
         "NAME": "<Enter a Strategy from strategies.py>",
         "Params": {},
-        "Source": "<Examples: close, high, low, open>",
         "Pair": "<Examples: BTCUSDT, ETHUSDT>",
         "Timeframe": "<Examples: 1, 5, 15 for 1min, 5mins and 15mins>",
         "candlesToLooks": "<10000?>",
