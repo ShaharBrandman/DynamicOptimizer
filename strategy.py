@@ -14,21 +14,20 @@ from pybit import usdt_perpetual
 
 from exceptions import InvalidLongCondition, InvalidShortCondition, InvalidPortoflio
 
-from tools import getClosedPosition, getConfig, getData, validateDataFrame
+from utils import getClosedPosition, getConfig, getData
 
 class Strategy:
     '''
-    Strategy Parameters: \n
-    @src: close, open, high, low\n
-    @pair: BTCUSDT, ETHUSDT, DOGEUSDT, ADAUSDT\n
-    @timeframe: 1, 5, 15, 30, 60\n
-    @candlesToLooks: default = 1000\n
-    @dataset: default = None\n
+    Strategy Parameters:
+    @pair: BTCUSDT, ETHUSDT, DOGEUSDT, ADAUSDT
+    @timeframe: 1, 5, 15, 30, 60
+    @candlesToLooks: default = 1000
+    @dataset: default = None
     
-    Interface Functions\n
-     * setLongConditions(function) required\n
-     * setShortConditions(function) required\n
-     * setPortfolio(equity, leverage, commission, percentage (optional)) required \n
+    Interface Functions
+     * setLongConditions(function) required
+     * setShortConditions(function) required
+     * setPortfolio(equity, leverage, commission, percentage (optional)) required 
      * setTakeProfitAndStopLoss(function)
     '''
 
@@ -39,7 +38,6 @@ class Strategy:
         self.candlesToLooks = candlesToLooks
 
         if dataframe != None:
-            validateDataFrame(dataframe)
             self.data = dataframe
 
         c = getConfig()

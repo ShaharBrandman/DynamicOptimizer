@@ -2,11 +2,11 @@ import logging
 import time
 import os
 
-import pandas as pd
-
 from datetime import datetime
 
-from tools import getRunJson, getStrategyByInput, validateDataset
+from utils import getRunJson
+from strategies import getStrategyByInput
+from tools import validateDataset
 
 from optimizer import Optimizer
 

@@ -1,13 +1,12 @@
 import json
 import logging
 
-import pandas as pd
-
 from threading import Thread
 
 from strategy import Strategy
 
-from tools import randomizeParams, validatePortfolio
+from tools import *
+from utils import *
 
 class Optimizer(Thread):
     def __init__(self, portfolio: dict, strategy: Strategy, paramsToRandomize: dict, loops: int = 1000) -> None:

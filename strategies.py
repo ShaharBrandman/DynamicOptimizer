@@ -1,4 +1,5 @@
 import math
+import json
 
 import pandas as pd
 import talib as TA
@@ -7,7 +8,7 @@ from strategy import Strategy
 
 from tools import validateParams
 
-from exceptions import InvalidTakeProfitStopLoss
+from exceptions import InvalidTakeProfitStopLoss, StrategyNotExists
 
 class CE(Strategy):
     def __init__(self, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset: pd.DataFrame = None) -> None:
@@ -124,7 +125,7 @@ class UMAR(Strategy):
                     lowerBand = TA.ATR(data[params['ATR-LowerBand-Source']], params['ATR-Bands-Length']) * params['ATR-LowerBand-Multiplier']
 
                     if 'Risk/Reward-Ratio' in params['TPSL']:
-                        if self.direction is 'Long':
+                        if self.direction == 'Long':
                             takeProfit = (lowerBand * (100 + params['TPSL']['Risk/Reward-Ratio'])) / 100
 
                             return takeProfit, lowerBand
@@ -267,3 +268,12 @@ Strategies = {
     'UMAR': UMAR,
     'UMAS': UMAS
 }
+
+def getStrategyByInput(input: str) -> any:
+    if input not in Strategies:
+        raise StrategyNotExists(f'{input} doesnot exists!')
+    
+    return Strategies[input]
+
+def getStrategyParamsByInput(input: str) -> dict:
+    return json.loads(open('strategies.json', 'r').read())[input]

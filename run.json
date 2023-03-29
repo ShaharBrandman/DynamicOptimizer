@@ -1,19 +1,29 @@
 {
     "Strategy": {
-        "NAME": "<Enter a Strategy from strategies.py>",
-        "Params": {},
-        "Pair": "<Examples: BTCUSDT, ETHUSDT>",
-        "Timeframe": "<Examples: 1, 5, 15 for 1min, 5mins and 15mins>",
-        "candlesToLooks": "<10000?>",
-        "dataset": "<Example: output/datasets/69.csv or Leave blank>"
+        "NAME": "CE",
+        "Params": {
+            "Source": "close",
+            "ZLSMA-Length": 50,
+            "ChandelierExit-Length": 22,
+            "ChandelierExit-Multiplier": 3.0,
+            "TPSL": {
+                "useTakeProfit": false,
+                "TakeProfit": 0.5,
+                "StopLoss": 0.4
+            }
+        },
+        "Pair": "BTCUSDT",
+        "Timeframe": "30",
+        "candlesToLooks": 10000,
+        "dataset": ""
     },
     "Optimizer": {
-        "loops": "<420696?>"
+        "loops": "1000"
     },
     "Portfolio": {
-        "Equity": "<100?>",
-        "Leverage": "<How fast would u like to lose your money?>",
-        "Commision": "<0.25?>",
-        "PercentPerPosition": "<10?>"
+        "Equity": 100,
+        "Leverage": 1,
+        "Commision": 0.1,
+        "PercentPerPosition": 10
     }
 }
