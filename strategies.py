@@ -10,9 +10,6 @@ from tools import validateParams
 from exceptions import InvalidTakeProfitStopLoss
 
 class CE(Strategy):
-    def __init__(self, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset: pd.DataFrame = None) -> None:
-        super(type(CE), self).__init__(pair, timeframe, candlesToLooks, dataset)
-
     def longStopCE(self, data: pd.Series, ceLength: int, ceMult: float) -> pd.Series:
         atr = ceMult * TA.ATR(data, ceLength)
 
@@ -108,9 +105,6 @@ class CE(Strategy):
         super().setLongConditions(defintion)
 
 class UMAR(Strategy):
-    def __init__(self, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset: pd.DataFrame = None) -> None:
-        super(UMAR, self).__init__(pair, timeframe, candlesToLooks, dataset)
-
     def setTakeProfitAndStopLoss(self, params: dict, data: pd.DataFrame = None) -> None:
         validateParams(self, params)
 
@@ -147,8 +141,6 @@ class UMAR(Strategy):
     def onLongCondition(self, index: int) -> None:
         self.direction = 'Long'
         return super().onLongCondition(index)
-
-
 
     def onShortCondition(self, index: int) -> None:
         self.direction = 'Short'
@@ -191,9 +183,6 @@ class UMAR(Strategy):
         super().setShortConditions(defintion)
 
 class UMAS(Strategy):
-    def __init__(self, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset: pd.DataFrame = None) -> None:
-        super(UMAS, self).__init__(pair, timeframe, candlesToLooks, dataset)
-
     def calculateMovingAverage(self: Strategy, source: str, maLength: int, maType: int = 1) -> pd.Series:
         if maType == 1:
             return TA.SMA(source, maLength)
