@@ -1,5 +1,4 @@
 import math
-import json
 
 import pandas as pd
 import talib as TA
@@ -8,11 +7,11 @@ from strategy import Strategy
 
 from tools import validateParams
 
-from exceptions import InvalidTakeProfitStopLoss, StrategyNotExists
+from exceptions import InvalidTakeProfitStopLoss
 
 class CE(Strategy):
     def __init__(self, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset: pd.DataFrame = None) -> None:
-        super().__init__(pair, timeframe, candlesToLooks, dataset)
+        super(type(CE), self).__init__(pair, timeframe, candlesToLooks, dataset)
 
     def longStopCE(self, data: pd.Series, ceLength: int, ceMult: float) -> pd.Series:
         atr = ceMult * TA.ATR(data, ceLength)
@@ -110,7 +109,7 @@ class CE(Strategy):
 
 class UMAR(Strategy):
     def __init__(self, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset: pd.DataFrame = None) -> None:
-        super().__init__(pair, timeframe, candlesToLooks, dataset)
+        super(UMAR, self).__init__(pair, timeframe, candlesToLooks, dataset)
 
     def setTakeProfitAndStopLoss(self, params: dict, data: pd.DataFrame = None) -> None:
         validateParams(self, params)
@@ -193,7 +192,7 @@ class UMAR(Strategy):
 
 class UMAS(Strategy):
     def __init__(self, pair: str, timeframe: str, candlesToLooks: int = 1000, dataset: pd.DataFrame = None) -> None:
-        super().__init__(pair, timeframe, candlesToLooks, dataset)
+        super(UMAS, self).__init__(pair, timeframe, candlesToLooks, dataset)
 
     def calculateMovingAverage(self: Strategy, source: str, maLength: int, maType: int = 1) -> pd.Series:
         if maType == 1:
@@ -268,12 +267,3 @@ Strategies = {
     'UMAR': UMAR,
     'UMAS': UMAS
 }
-
-def getStrategyByInput(input: str) -> any:
-    if input not in Strategies:
-        raise StrategyNotExists(f'{input} doesnot exists!')
-    
-    return Strategies[input]
-
-def getStrategyParamsByInput(input: str) -> dict:
-    return json.loads(open('strategies.json', 'r').read())[input]

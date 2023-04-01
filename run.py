@@ -4,8 +4,7 @@ import os
 
 from datetime import datetime
 
-from utils import getRunJson
-from strategies import getStrategyByInput
+from utils import getRunJson, getStrategyByInput
 from tools import validateDataset
 
 from optimizer import Optimizer

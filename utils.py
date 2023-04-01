@@ -3,12 +3,14 @@ import logging
 import time
 import requests
 
-import pandas as pd
-
 from datetime import datetime
 from datetime import timedelta
 
 from pybit import usdt_perpetual
+
+import pandas as pd
+
+from exceptions import StrategyNotExists
 
 def getData(pair: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) -> pd.DataFrame:
     postMin = 0
@@ -87,3 +89,15 @@ def getClosedPosition(leverage: int, position: dict, ExitPrice: float) -> dict:
 
 def getConfig() -> dict:
     return json.loads(open('config.json', 'r').read())
+
+def getStrategyByInput(input: str) -> any:
+    #moved it here because this cause a circular import error
+    from strategies import Strategies
+
+    if input not in Strategies:
+        raise StrategyNotExists(f'{input} doesnot exists!')
+    
+    return Strategies[input]
+
+def getStrategyParamsByInput(input: str) -> dict:
+    return json.loads(open('strategies.json', 'r').read())[input]

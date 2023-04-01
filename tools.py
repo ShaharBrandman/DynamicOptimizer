@@ -5,8 +5,6 @@ import pandas as pd
 
 from exceptions import *
 
-from strategies import Strategies
-
 from utils import getStrategyParamsByInput
 
 def validateDataset(pathToDataset: str) -> pd.DataFrame:
@@ -63,6 +61,9 @@ def randomizeParams(paramsToRandomize: dict) -> dict:
     return paramsToRandomize
 
 def validateParams(self: any, params: dict) -> None:
+    #moved it here because beforehand it will cause a circual import error
+    from strategies import Strategies
+
     for e in Strategies:
         if e is self:
             sParams = getStrategyParamsByInput(e.__class__.__name__)
