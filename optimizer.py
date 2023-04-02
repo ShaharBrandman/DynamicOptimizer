@@ -9,28 +9,26 @@ from tools import *
 from utils import *
 
 class Optimizer(Thread):
-    def __init__(self, portfolio: dict, strategy: Strategy, paramsToRandomize: dict, loops: int = 1000) -> None:
+    def __init__(self, portfolio: dict, strategy: Strategy, paramsToRandomize: dict, loops: int = 1000) -> None:        
         validatePortfolio(portfolio)
         
         self.portfolio = portfolio
         self.strategy = strategy
         self.paramsToRandomize = paramsToRandomize
-        self.loops = loops
+        self.loops = int(loops)
 
-        self.bestPNL = {
+        self.best = {
             'PNL': 0.0,
-            'params': None
+            'accuracy': 0.0,
+            'params': []
         }
 
-        self.bestAccuracy = {
-            'accuracy': 0.0,
-            'params': None
-        }
+        super().__init__()
 
     def run(self) -> None:
         for i in range(self.loops):
             randomizeParams(self.paramsToRandomize)
-
+            
             self.strategy.setLongConditions(self.paramsToRandomize)
             self.strategy.setShortConditions(self.paramsToRandomize)
             self.strategy.setPortfolio(
@@ -39,7 +37,7 @@ class Optimizer(Thread):
                 self.portfolio['Commision'],
                 self.portfolio['PercentPerPosition']
             )
-            
+
             if 'TPSL' in self.paramsToRandomize:
                 if self.paramsToRandomize['TPSL']['useTakeProfit'] == True:
                     self.strategy.setTakeProfitAndStopLoss(self.paramsToRandomize['TPSL'])
@@ -49,22 +47,19 @@ class Optimizer(Thread):
 
             status = json.loads(open(f'output/strategiesStats/{strategyID}.json', 'r').read())
             
-            if status['PNL'] >= self.bestPNL['PNL']:
-                self.bestPNL['PNL'] = status['PNL']
-                self.bestPNL['params'] = self.paramsToRandomize
-
-            if status['accuracy'] >= self.bestAccuracy['accuracy']:
-                self.bestAccuracy['accuracy'] = status['accuracy']
-                self.bestAccuracy['params'] = self.paramsToRandomize
+            if (status['PNL'] >= self.best['PNL']) and (status['accuracy'] >= self.best['accuracy']):
+                self.best['PNL'] = status['PNL']
+                self.best['accuracy'] = status['accuracy']
+                self.best['params'] = self.paramsToRandomize
 
             print(f'loop #{i}, params: {self.paramsToRandomize}, PNL: {status["PNL"]}%, Accuracy: {status["accuracy"]}%\n')
             logging.debug(f'loop #{i}, params: {self.paramsToRandomize}, PNL: {status["PNL"]}%, Accuracy: {status["accuracy"]}%')
 
-        logging.debug(f'bestPNL: {self.bestPNL["PNL"]}, params: {self.bestPNL["params"]}')
-        logging.debug(f'bestAccuracy: {self.bestAccuracy["accuracy"]}, params: {self.bestPNL["params"]}')
+        logging.debug(f'best params: {self.paramsToRandomize}')
+        logging.debug(f'best PNL {self.best["PNL"]}, best accuracy: {self.best["accuracy"]}')
 
-        print(f'bestPNL: {self.bestPNL["PNL"]}, params: {self.bestPNL["params"]}\n')
-        print(f'bestAccuracy: {self.bestAccuracy["accuracy"]}, params: {self.bestPNL["params"]}\n')
+        print(f'best params: {self.paramsToRandomize}\n')
+        print(f'best PNL {self.best["PNL"]}, best accuracy: {self.best["accuracy"]}\n')
 
             
 

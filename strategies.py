@@ -54,7 +54,10 @@ class CE(Strategy):
                 dir[i] = dir[i-1]
 
     def setTakeProfitAndStopLoss(self, params: dict) -> None:
-        validateParams(self, params)
+        validateParams(
+            self.__class__.__name__,
+            params
+        )
 
         if params['TPSL']['useTakeProfit'] is True:
         
@@ -64,7 +67,10 @@ class CE(Strategy):
             super().setTakeProfitAndStopLoss(defintion(params))
 
     def setLongConditions(self, params: dict) -> None:
-        validateParams(self, params)
+        validateParams(
+            self.__class__.__name__,
+            params
+        )
 
         def defintion(self, data: pd.DataFrame) -> pd.Series:
             CE = self.calculateCE(
@@ -85,7 +91,10 @@ class CE(Strategy):
         super().setLongConditions(defintion)
 
     def setShortConditions(self, params: dict) -> None:
-        validateParams(self, params)
+        validateParams(
+            self.__class__.__name__,
+            params
+        )
 
         def defintion(self, data: pd.DataFrame) -> pd.Series:
             CE = self.calculateCE(
@@ -106,7 +115,10 @@ class CE(Strategy):
 
 class UMAR(Strategy):
     def setTakeProfitAndStopLoss(self, params: dict, data: pd.DataFrame = None) -> None:
-        validateParams(self, params)
+        validateParams(
+            self.__class__.__name__,
+            params
+        )
 
         if params['TPSL']['useTakeProfit'] is True:
             if params['TPSL']['useATRBands'] is True:
@@ -132,7 +144,10 @@ class UMAR(Strategy):
                 super().setTakeProfitAndStopLoss(definition(data, params))
             else:
                 def defintion(params: dict) -> tuple:
-                    validateParams(self, params)
+                    validateParams(
+                        self.__class__.__name__,
+                        params
+                    )
 
                     return params['TPSL']['TakeProfit'], params['TPSL']['StopLoss']
 
@@ -147,7 +162,10 @@ class UMAR(Strategy):
         return super().onShortCondition(index)
 
     def setLongConditions(self, params: dict) -> None:
-        validateParams(self, params)
+        validateParams(
+            self.__class__.__name__,
+            params
+        )
 
         def defintion(data: pd.DataFrame) -> pd.Series:
             rsi = TA.RSI(data[params['Source']], params['RSI-Length'])
@@ -165,7 +183,10 @@ class UMAR(Strategy):
         super().setLongConditions(defintion)
 
     def setShortConditions(self, params: dict) -> None:
-        validateParams(self, params)
+        validateParams(
+            self.__class__.__name__,
+            params
+        )
 
         def defintion(data: pd.DataFrame):
             rsi = TA.RSI(data[params['Source']], params['RSI-Length'])
@@ -210,7 +231,10 @@ class UMAS(Strategy):
             return tema
 
     def setLongConditions(self, params: dict) -> None:
-        validateParams(self, params)
+        validateParams(
+            self.__class__.__name__,
+            params
+        )
 
         def defintion(self, data: pd.DataFrame) -> pd.Series:
             ma = self.calculateMovingAverage(
@@ -231,7 +255,10 @@ class UMAS(Strategy):
         super().setLongConditions(defintion)
 
     def setShortConditions(self, params: dict) -> None:
-        validateParams(self, params)
+        validateParams(
+            self.__class__.__name__,
+            params
+        )
 
         def defintion(self, data: pd.DataFrame) -> pd.Series:
             ma = self.calculateMovingAverage(

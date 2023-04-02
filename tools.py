@@ -38,41 +38,37 @@ def validateDataset(pathToDataset: str) -> pd.DataFrame:
     return data
 
 def randomizeParams(paramsToRandomize: dict) -> dict:
-    for i in range(len(paramsToRandomize)):
-        if type(paramsToRandomize[i]) == str:
+    for e in paramsToRandomize:
+        if e == 'Source':
             s = ['close', 'open', 'high', 'low']
-            r = random.randint(0, len(s))
-
-            paramsToRandomize[i] = s[r]
-        elif type(paramsToRandomize[i]) == 'float':
-            r = random.randrange(0.0, 100.0)
-            paramsToRandomize[i] = r
-        elif type(paramsToRandomize[i]) == 'int':
+            r = random.randint(0, len(s) - 1)
+            
+            paramsToRandomize[e] = s[r]
+        elif e == 'TPSL':
+            randomizeParams(paramsToRandomize['TPSL'])
+        elif e == 'StopLoss':
+            r = random.uniform(0.1, 2.5)
+            paramsToRandomize[e] = r
+        elif type(paramsToRandomize[e]) == float:
+            r = random.uniform(0.0, 100.0)
+            paramsToRandomize[e] = r
+        elif type(paramsToRandomize[e]) == int:
             r = random.randint(0, 100)
-            paramsToRandomize[i] = r
-        elif type(paramsToRandomize[i]) == 'bool':
+            paramsToRandomize[e] = r
+        elif type(paramsToRandomize[e]) == bool:
             s = [True, False]
             r = random.randint(0, 1)
 
-            paramsToRandomize[i] = s[r]
-        elif type(paramsToRandomize[i]) == 'dict':
-            paramsToRandomize[i] = randomizeParams[paramsToRandomize[i]]
+            paramsToRandomize[e] = s[r]
 
     return paramsToRandomize
 
-def validateParams(self: any, params: dict) -> None:
-    #moved it here because beforehand it will cause a circual import error
-    from strategies import Strategies
+def validateParams(strat: any, params: dict) -> None:
+    sParams = getStrategyParamsByInput(strat)
 
-    for e in Strategies:
-        if e is self:
-            sParams = getStrategyParamsByInput(e.__class__.__name__)
-
-            for j in sParams:
-                if j not in params:
-                    raise InvalidParams(f'{j} Parameter is not in params')
-                
-    raise InvalidParams(f'{self} is not in Strategies.py')
+    for e in sParams:
+        if e not in params:
+            raise InvalidParams(f'{e} Parameter is not in params')
 
 def validatePortfolio(portfolio: dict) -> None:
     if 'Equity' in portfolio:

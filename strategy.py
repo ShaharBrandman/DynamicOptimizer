@@ -49,9 +49,6 @@ class Strategy:
         )
 
     def setLongConditions(self, defintion: callable) -> None:
-        if type(defintion) != callable:
-            raise InvalidLongCondition(f'defintion cant be of type: {type(defintion)}')
-
         '''
         @required = true \n
         define how to calculate long conditions
@@ -59,9 +56,6 @@ class Strategy:
         self.longConditions = defintion
 
     def setShortConditions(self, defintion: callable) -> None:
-        if type(defintion) != callable:
-            raise InvalidLongCondition(f'defintion cant be of type: {type(defintion)}')
-
         '''
         @required = true \n
         define how to calculate short conditions
@@ -74,7 +68,7 @@ class Strategy:
         sets equity, leverage and commision and PercentPerPosition (optional)
         '''
 
-        self.budget = (self.equity * PercentPerPosition) / 100
+        self.budget = (equity * PercentPerPosition) / 100
 
         self.portoflio = {
             'equity': equity,
@@ -232,10 +226,10 @@ class Strategy:
         '''
         runs the strategy
         '''
-        if self.longCondition is None:
+        if self.longConditions is None:
             raise InvalidLongCondition('Long Condition cant be None')
 
-        if self.shortCondition is None:
+        if self.shortConditions is None:
             raise InvalidShortCondition('Short Condition cant be None')
 
         if self.portoflio is None:

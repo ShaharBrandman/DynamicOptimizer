@@ -30,13 +30,13 @@ def initLogs():
 
     logging.info(f'Running {os.getcwd()}/run.py')
 
-start = time.time()
+#start = time.time() / 10
 
 settings = getRunJson()
 
 s = getStrategyByInput(
     settings['Strategy']['NAME']
-).__init__(
+)(
     settings['Strategy']['Pair'],
     settings['Strategy']['Timeframe'],
     settings['Strategy']['candlesToLooks'],
@@ -50,8 +50,8 @@ o = Optimizer(
     settings['Optimizer']['loops']
 )
 
-o.join()
+o.start()
 
-end = time.time()
+#end = time.time() / 10
 
-print(f'Finished executing {os.getcwd()}/run.py at {end - start} seconds')
+#print(f'Finished executing {os.getcwd()}/run.py at {end - start} seconds')
