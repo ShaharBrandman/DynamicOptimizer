@@ -12,7 +12,7 @@ import pandas as pd
 
 from exceptions import StrategyNotExists
 
-def getData(pair: str, timeframe: str, limit: int, client: usdt_perpetual.HTTP) -> pd.DataFrame:
+def getData(pair: str, timeframe: int, limit: int, client: usdt_perpetual.HTTP) -> pd.DataFrame:
     postMin = 0
     data = None
 

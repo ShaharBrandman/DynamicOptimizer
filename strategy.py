@@ -16,6 +16,8 @@ from exceptions import InvalidLongCondition, InvalidShortCondition, InvalidPorto
 
 from utils import getClosedPosition, getConfig, getData
 
+from types import FunctionType
+
 class Strategy:
     '''
     Strategy Parameters:
@@ -31,7 +33,7 @@ class Strategy:
      * setTakeProfitAndStopLoss(function)
     '''
 
-    def __init__(self, pair: str, timeframe: str, candlesToLooks: int = 1000, dataframe: pd.DataFrame = None) -> None:
+    def __init__(self, pair: str, timeframe: int, candlesToLooks: int = 1000, dataframe: pd.DataFrame = None) -> None:
         self.ID = f'{pair}-{timeframe}-{candlesToLooks}-{datetime.now().timestamp()}'
         self.pair = pair
         self.timeframe = timeframe
@@ -39,6 +41,8 @@ class Strategy:
 
         if dataframe != None:
             self.data = dataframe
+        else:
+            self.data = None
 
         c = getConfig()
 
@@ -48,14 +52,14 @@ class Strategy:
             api_secret = c['bybitAPISecretKey']
         )
 
-    def setLongConditions(self, defintion: callable) -> None:
+    def setLongConditions(self, defintion: FunctionType) -> None:
         '''
         @required = true \n
         define how to calculate long conditions
         '''
         self.longConditions = defintion
 
-    def setShortConditions(self, defintion: callable) -> None:
+    def setShortConditions(self, defintion: FunctionType) -> None:
         '''
         @required = true \n
         define how to calculate short conditions
@@ -235,17 +239,17 @@ class Strategy:
         if self.portoflio is None:
             raise InvalidPortoflio('Portoflio cant be None')
 
-        if self.data == None:
+        if self.data is None:
             self.data = getData(self.pair, self.timeframe, self.candlesToLooks, self.client).astype('float')
-
-        self.data['longConditions'] = self.longConditions(self.data)
-        self.data['shortConditions'] = self.shortConditions(self.data)
         
         #save dataset as a file
         with open(f'output/datasets/{self.ID}.csv', 'w') as f:
             f.write(self.data.to_csv())
             f.close()
 
+        self.data['longConditions'] = self.longConditions(self, data = self.data)
+        self.data['shortConditions'] = self.shortConditions(self,  data = self.data)
+        
         '''
         positions structure:
             * ID

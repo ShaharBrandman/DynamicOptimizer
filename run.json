@@ -13,8 +13,8 @@
             }
         },
         "Pair": "BTCUSDT",
-        "Timeframe": "30",
-        "candlesToLooks": 10000,
+        "Timeframe": 30,
+        "candlesToLooks": 50,
         "dataset": ""
     },
     "Optimizer": {

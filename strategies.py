@@ -54,15 +54,19 @@ class CE(Strategy):
                 dir[i] = dir[i-1]
 
     def setTakeProfitAndStopLoss(self, params: dict) -> None:
-        validateParams(
-            self.__class__.__name__,
-            params
-        )
+        if 'useTakeProfit' not in params:
+            pass
 
-        if params['TPSL']['useTakeProfit'] is True:
+        if params['useTakeProfit'] is True:
         
+            if 'TakeProfit' not in params:
+                raise InvalidTakeProfitStopLoss('params doesnt have attribute TakeProfit')
+            
+            if 'StopLoss' not in params:
+                raise InvalidTakeProfitStopLoss('params doesnt have attribute StopLoss')
+
             def defintion(params: dict) -> tuple:
-                return params['TPSL']['TakeProfit'], params['TPSL']['StopLoss']
+                return params['TakeProfit'], params['StopLoss']
 
             super().setTakeProfitAndStopLoss(defintion(params))
 
@@ -73,17 +77,17 @@ class CE(Strategy):
         )
 
         def defintion(self, data: pd.DataFrame) -> pd.Series:
-            CE = self.calculateCE(
+            ce = self.calculateCE(
                 data[params['Source']],
                 params['ChandelierExit-Length'],
                 params['ChandelierExit-Multiplier']
             )
-            ZLSMA = self.calculateZLSMA(data[params['Source']], params['ZLSMA-Length'])
+            zslma = self.calculateZLSMA(data[params['Source']], params['ZLSMA-Length'])
 
             arr = pd.Series([0] * len(data[params['Source']]))
 
             for i in range(1, len(arr)):
-                if CE[i] == 1 and ZLSMA[i] < data[params['Source']][i] and CE[i-1] == -1:
+                if ce[i] == 1 and zslma[i] < data[params['Source']][i] and ce[i-1] == -1:
                     arr[i] = 1
 
             return arr
@@ -97,21 +101,21 @@ class CE(Strategy):
         )
 
         def defintion(self, data: pd.DataFrame) -> pd.Series:
-            CE = self.calculateCE(
+            ce = self.calculateCE(
                 params['ChandelierExit-Length'],
                 params['ChandelierExit-Multiplier']
             )
-            ZLSMA = self.calculateZLSMA(params['ZLSMA-Length'])
+            zslma = self.calculateZLSMA(params['ZLSMA-Length'])
 
             arr = pd.Series([0] * len(data[params['Source']]))
 
             for i in range(1, len(arr)):
-                if CE[i] == -1 and ZLSMA[i] > data[params['Source']][i] and CE[i-1] == 1:
+                if ce[i] == -1 and zslma[i] > data[params['Source']][i] and ce[i-1] == 1:
                     arr[i] = 1
 
             return arr
-
-        super().setLongConditions(defintion)
+        
+        super().setShortConditions(defintion)
 
 class UMAR(Strategy):
     def setTakeProfitAndStopLoss(self, params: dict, data: pd.DataFrame = None) -> None:

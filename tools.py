@@ -65,7 +65,6 @@ def randomizeParams(paramsToRandomize: dict) -> dict:
 
 def validateParams(strat: any, params: dict) -> None:
     sParams = getStrategyParamsByInput(strat)
-
     for e in sParams:
         if e not in params:
             raise InvalidParams(f'{e} Parameter is not in params')
