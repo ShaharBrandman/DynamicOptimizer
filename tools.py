@@ -1,14 +1,5 @@
 
-def validateParams(params: dict) -> None:
-    pass
-
 def randomizeParams(params: dict) -> dict:
-    pass
-
-def randomizePair() -> str:
-    pass
-
-def randomizeTimeframe() -> int:
     pass
 
 def isBetter(x: dict, y: dict) -> dict:

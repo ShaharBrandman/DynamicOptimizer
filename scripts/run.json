@@ -2,33 +2,11 @@
     "Strategy": {
         "Params": {
             "Source": "close",
-            "ZLSMA-Length": {
-                "default": 50,
-                "min": 1,
-                "max": 100
-            },
-            "ChandelierExit-Length": {
-                "default": 2,
-                "min": 1,
-                "max": 100
-            },
-            "ChandelierExit-Multiplier": {
-                "default": 3.0,
-                "min": 1,
-                "max": 100
-            },
+            "ChandelierExit-Length": 2,
+            "ChandelierExit-Multiplier": 3.0,
             "TPSL": {
-                "useTakeProfit": false,
-                "TakeProfit": {
-                    "default": 0.5,
-                    "min": 0.1,
-                    "max": 5
-                },
-                "StopLoss": {
-                    "default": 0.4,
-                    "min": 0.1,
-                    "max": 2
-                }
+                "TakeProfit": 0.5,
+                "StopLoss": 0.4
             }
         },
         "Pair": "BTCUSDT",
@@ -36,14 +14,11 @@
         "dataLength": 1000
     },
     "Optimizer": {
-        "loops": "1000",
-        "randomizeParamEveryLoop": true,
-        "randomizeTimeframeEveryLoop": true,
-        "randomizePairEveryLoop": true
+        "loops": "1000"
     },
     "Portfolio": {
         "Equity": 100,
         "Leverage": 1,
-        "Commision": 0.1
+        "Commision": 0.0
     }
 }

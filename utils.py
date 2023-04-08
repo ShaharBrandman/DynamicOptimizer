@@ -1,20 +1,19 @@
 import json
 import time
 import logging
-
-from requests.exceptions import ConnectionError, RequestException, ReadTimeout
-
-from datetime import datetime, timedelta
+import requests
 
 import pandas as pd
+
+from datetime import datetime, timedelta
 
 from pybit import usdt_perpetual
 
 def getRunJson() -> dict:
-    return json.loads(open('run.json', 'r').read())
+    return json.loads(open('scripts/run.json', 'r').read())
 
 def getConfig() -> dict:
-    return json.loads(open('config.json', 'r').read())
+    return json.loads(open('scripts/config.json', 'r').read())
 
 def getData(pair: str, timeframe: int, limit: int, client: usdt_perpetual.HTTP) -> pd.DataFrame:
     postMin = 0
@@ -31,19 +30,18 @@ def getData(pair: str, timeframe: int, limit: int, client: usdt_perpetual.HTTP) 
                     from_time = int(t.timestamp())
                 )
                 break
-            except ConnectionError as e:
+            except requests.exceptions.ConnectionError as e:
                 logging.debug(f'{pair} ConnectionError fetching data: {e}')
                 time.sleep(1)
                 continue
-            except RequestException as e:
+            except requests.exceptions.RequestException as e:
                 logging.debug(f'{pair} RequestException fetching data: {e}')
                 time.sleep(1)
                 continue
-            except ReadTimeout as e:
+            except requests.exceptions.ReadTimeout as e:
                 logging.debug(f'{pair} ReadTimeout fetching data: {e}')
                 time.sleep(1)
                 continue
-
 
         tmp = pd.DataFrame(
             tmp['result'],
