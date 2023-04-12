@@ -6,6 +6,7 @@ export PYTHON_VERSION=`python3 -c 'import sys; version=sys.version_info[:3]; pri
 
 export whichConda=`which conda`
 
+export USER=`whoami`
 export ANACONDA_DEFAULT_PATH=`${HOME}/${USER}/Anaconda3/bin`
 
 ##install anaconda platform incase it is not installed already
