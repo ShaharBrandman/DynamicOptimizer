@@ -10,10 +10,10 @@ from datetime import datetime, timedelta
 from pybit import usdt_perpetual
 
 def getRunJson() -> dict:
-    return json.loads(open('scripts/run.json', 'r').read())
+    return json.loads(open('jsonFiles/run.json', 'r').read())
 
 def getConfig() -> dict:
-    return json.loads(open('scripts/config.json', 'r').read())
+    return json.loads(open('jsonFiles/config.json', 'r').read())
 
 def getData(pair: str, timeframe: int, limit: int, client: usdt_perpetual.HTTP) -> pd.DataFrame:
     postMin = 0
