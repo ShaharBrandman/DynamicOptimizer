@@ -1,13 +1,14 @@
 import json
 import time
 import logging
-import requests
 
 import pandas as pd
 
 from datetime import datetime, timedelta
 
-from pybit import usdt_perpetual
+from httpx import NetworkError
+
+from bybitHTTPX import BybitClient
 
 def getRunJson() -> dict:
     return json.loads(open('jsonFiles/run.json', 'r').read())
@@ -15,58 +16,69 @@ def getRunJson() -> dict:
 def getConfig() -> dict:
     return json.loads(open('jsonFiles/config.json', 'r').read())
 
-def getData(pair: str, timeframe: int, limit: int, client: usdt_perpetual.HTTP) -> pd.DataFrame:
-    postMin = 0
+def getData(pair: str, timeframe: str, limit: int, client: BybitClient) -> pd.DataFrame:
+    candlesCounter = 0
     data = None
 
-    while postMin <= limit:
-        t = datetime.now() - timedelta(minutes = (limit - postMin) * timeframe)
+    dateNow = datetime.now()
+    print(dateNow, candlesCounter)
+    while candlesCounter < limit:
+        #timeRange = datetime.now() - timedelta(minutes = (limit - candlesCounter) * timeframe)
+
+        if timeframe.isdigit():
+            timeRange = dateNow - timedelta(minutes = (limit - candlesCounter) * int(timeframe))
+        elif timeframe == 'D':
+            timeRange = dateNow - timedelta(days=  (limit - candlesCounter))
+        elif timeframe == 'W':
+            timeRange = dateNow - timedelta(weeks=  (limit - candlesCounter))
+        elif timeframe == 'M':
+            timeRange = dateNow - timedelta(weeks=  (limit - candlesCounter) * 4)
+
+        print(timeRange, candlesCounter)
 
         while True:
             try:
-                tmp = client.query_kline(
+                tmp = json.loads(client.getkLines(
+                    category='inverse',
                     symbol = pair,
                     interval = timeframe,
-                    from_time = int(t.timestamp())
-                )
-                break
-            except requests.exceptions.ConnectionError as e:
-                logging.debug(f'{pair} ConnectionError fetching data: {e}')
-                time.sleep(1)
-                continue
-            except requests.exceptions.RequestException as e:
-                logging.debug(f'{pair} RequestException fetching data: {e}')
-                time.sleep(1)
-                continue
-            except requests.exceptions.ReadTimeout as e:
-                logging.debug(f'{pair} ReadTimeout fetching data: {e}')
-                time.sleep(1)
-                continue
+                    fromTimestamp= timeRange,
+                    limit = limit
+                ).content)['result']['list']
 
+                if limit - candlesCounter < 200:
+                    tmp = tmp[:limit - candlesCounter]
+
+                print('got data', candlesCounter)
+                break
+            
+            except NetworkError as e:
+                print(f'{pair} Exception fetching data: {e}, type of Exception: {type(e)}')
+                logging.debug(f'{pair} Exception fetching data: {e}, type of Exception: {type(e)}')
+                time.sleep(1)
+                continue
+        
         tmp = pd.DataFrame(
-            tmp['result'],
+            tmp,
             columns = (
-                'symbol',
-                'interval', 
-                'open_time', 
-                'open',
-                'high', 
-                'low', 
-                'close', 
-                'volume', 
+                'open_time',
+                'Open', 
+                'High', 
+                'Low',
+                'Close', 
+                'Volume',
                 'turnover'
             )
-        ).drop(columns= ['symbol'])
+        )
 
         if data is None:
             data = tmp
         else:
             data = pd.concat([data, tmp], ignore_index = True)
 
-        postMin+= 200
+        candlesCounter+= 200
         #time.sleep(0.1)
 
     return data
-
 
 

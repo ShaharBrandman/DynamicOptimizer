@@ -2,11 +2,11 @@ from threading import Thread
 
 from backtesting import Backtest
 
-from pybit import usdt_perpetual
-
 import pandas as pd
 
 from strategy import daStrategy
+
+from client import BybitClient
 
 from utils import getData, getConfig
 
@@ -14,10 +14,10 @@ class Optimizer(Thread):
     def __init__(self, params: dict) -> None:
         c = getConfig()
 
-        self.client = usdt_perpetual.HTTP(
-            endpoint = c['bybitEndpoint'],
-            api_key = c['bybitAPIKey'],
-            api_secret = c['bybitAPISecretKey']
+        self.client = BybitClient(
+            url = c['bybitEndpoint'],
+            apiKey = c['bybitAPIKey'],
+            apiSecret = c['bybitAPISecretKey']
         )
 
         self.params = params
