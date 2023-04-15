@@ -6,7 +6,7 @@ import pandas as pd
 
 from strategy import daStrategy
 
-from client import BybitClient
+from bybitHTTPX import BybitClient
 
 from utils import getData, getConfig
 
