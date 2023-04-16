@@ -1,0 +1,4 @@
+[submodule "bybitHTTPX"]
+    ignore = dirty
+    path = bybitHTTPX
+    url = https://github.com/ShaharBrandman/bybitHTTPX.git
