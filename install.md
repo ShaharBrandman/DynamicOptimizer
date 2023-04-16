@@ -1,12 +1,3 @@
-##
-## This script requires anaconda installed and added to enviroments varibale
-##
-##  Anaconda3 2023.03 Linux Install repo:
-##  https://repo.anaconda.com/archive/Anaconda3-2023.03-Linux-x86_64.sh
-## Simply wget it :)
-
-git clone https://www.github.com/ShaharBrandman/bybitHTTPX.git
-
 wget https://repo.anaconda.com/archive/Anaconda3-2023.03-Linux-x86_64.sh
 
 chmod +x Anaconda3-2023.03-Linux-x86_64.sh
