@@ -30,9 +30,7 @@ class Optimizer(Thread):
             self.client
         ).astype('float')
 
-        data[['High', 'Low', 'Open', 'Close', 'Volume']] = data[['high', 'low', 'open', 'close', 'volume']].copy()
-        data.drop(columns= ['high', 'low', 'open', 'close', 'volume'])
-        #print(data)
+        print(data)
         
         bt = Backtest(
             data,
@@ -42,5 +40,4 @@ class Optimizer(Thread):
             commission = self.params['Portfolio']['Commision']
         ).run()
 
-        bt.plot()
         print(bt)

@@ -1,7 +1,7 @@
 {
     "Strategy": {
         "Params": {
-            "Source": "close",
+            "Source": "Close",
             "ChandelierExit-Length": 2,
             "ChandelierExit-Multiplier": 3.0,
             "TPSL": {
@@ -10,7 +10,7 @@
             }
         },
         "Pair": "BTCUSDT",
-        "Timeframe": 30,
+        "Timeframe": "30",
         "dataLength": 1000
     },
     "Optimizer": {

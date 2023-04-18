@@ -1,3 +1,5 @@
 pandas==2.0.0
 backtesting==0.3.3
 httpx==0.24.0
+TA-lib==0.4.26
+matplotlib==3.7.1

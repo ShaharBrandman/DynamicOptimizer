@@ -21,10 +21,9 @@ def getData(pair: str, timeframe: str, limit: int, client: BybitClient) -> pd.Da
     data = None
 
     dateNow = datetime.now()
-    print(dateNow, candlesCounter)
     while candlesCounter < limit:
         #timeRange = datetime.now() - timedelta(minutes = (limit - candlesCounter) * timeframe)
-
+        
         if timeframe.isdigit():
             timeRange = dateNow - timedelta(minutes = (limit - candlesCounter) * int(timeframe))
         elif timeframe == 'D':
@@ -33,8 +32,6 @@ def getData(pair: str, timeframe: str, limit: int, client: BybitClient) -> pd.Da
             timeRange = dateNow - timedelta(weeks=  (limit - candlesCounter))
         elif timeframe == 'M':
             timeRange = dateNow - timedelta(weeks=  (limit - candlesCounter) * 4)
-
-        print(timeRange, candlesCounter)
 
         while True:
             try:
@@ -49,7 +46,6 @@ def getData(pair: str, timeframe: str, limit: int, client: BybitClient) -> pd.Da
                 if limit - candlesCounter < 200:
                     tmp = tmp[:limit - candlesCounter]
 
-                print('got data', candlesCounter)
                 break
             
             except NetworkError as e:
