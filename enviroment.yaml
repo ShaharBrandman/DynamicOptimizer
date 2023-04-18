@@ -1,7 +1,0 @@
-name: DynamicOptimizer
-
-dependencies:
-  - pandas <=2.0.0
-  - pip:
-    - backtesting <=0.3.3
-    - bybitHTTPX
