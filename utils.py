@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 from httpx import NetworkError
 
-from libs.bybitHTTPX import BybitClient
+from bybitHTTPX import BybitClient
 
 def getRunJson() -> dict:
     return json.loads(open('jsonFiles/run.json', 'r').read())
