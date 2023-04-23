@@ -29,8 +29,6 @@ class Optimizer(Thread):
             self.params['Strategy']['dataLength'],
             self.client
         ).astype('float')
-
-        print(data)
         
         bt = Backtest(
             data,
@@ -38,6 +36,10 @@ class Optimizer(Thread):
             cash = self.params['Portfolio']['Equity'],
             margin = 1 / self.params['Portfolio']['Leverage'],
             commission = self.params['Portfolio']['Commision']
-        ).run()
+        )
 
-        print(bt)
+        stat = bt.run()
+        
+        print(stat)
+
+        bt.plot()

@@ -2,23 +2,19 @@
     "Strategy": {
         "Params": {
             "Source": "Close",
-            "ChandelierExit-Length": 2,
-            "ChandelierExit-Multiplier": 3.0,
-            "TPSL": {
-                "TakeProfit": 0.5,
-                "StopLoss": 0.4
-            }
+            "firstSMA": 9,
+            "secondSMA": 3
         },
         "Pair": "BTCUSDT",
-        "Timeframe": "30",
-        "dataLength": 1000
+        "Timeframe": "1",
+        "dataLength": 200
     },
     "Optimizer": {
         "loops": "1000"
     },
     "Portfolio": {
-        "Equity": 100,
+        "Equity": 50000,
         "Leverage": 1,
-        "Commision": 0.0
+        "Commision": 0.025
     }
 }

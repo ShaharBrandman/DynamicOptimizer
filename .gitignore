@@ -1,7 +1,5 @@
-Anaconda3-2023.03-Linux-x86_64.sh
-ta-lib-0.4.0-src.tar.gz
-ta-lib
-talib
+# Core Libaries
+libs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
