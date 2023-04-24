@@ -15,5 +15,8 @@ def initLogs():
 
     logging.info(f'Running {os.getcwd()}/run.py')
 
+if os.path.exists('datasets') != True:
+    os.mkdir('datasets')
+
 o = Optimizer(getRunJson())
 o.start()

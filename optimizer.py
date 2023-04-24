@@ -2,8 +2,6 @@ from threading import Thread
 
 from backtesting import Backtest
 
-import pandas as pd
-
 from strategy import daStrategy
 
 from bybitHTTPX import BybitClient

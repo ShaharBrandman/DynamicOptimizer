@@ -3,3 +3,4 @@ backtesting==0.3.3
 httpx==0.24.0
 TA-lib==0.4.26
 matplotlib==3.7.1
+beautifulsoup4==4.12.1
