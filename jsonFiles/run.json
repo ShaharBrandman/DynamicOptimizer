@@ -2,15 +2,14 @@
     "Strategy": {
         "Params": {
             "Source": "Close",
-            "firstSMA": 9,
-            "secondSMA": 3
+            "firstSMA": 10,
+            "secondSMA": 20
         },
         "Pair": "BTCUSDT",
-        "Timeframe": "1",
-        "dataLength": 200
+        "DatasetURL": "https://public.bybit.com/kline_for_metatrader4/BTCUSDT/2022/BTCUSDT_15_2022-09-01_2022-09-30.csv.gz"
     },
     "Optimizer": {
-        "loops": "1000"
+        "loops": "1"
     },
     "Portfolio": {
         "Equity": 50000,

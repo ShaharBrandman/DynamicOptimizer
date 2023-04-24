@@ -13,7 +13,7 @@ def getRunJson() -> dict:
 def getConfig() -> dict:
     return json.loads(open('jsonFiles/config.json', 'r').read())
 
-def getDatasets(pair: str, timeframe: Union[str, list[str]], year: Optional[Union[int, list[int]]] = None) -> dict[str, pd.DataFrame]:
+def getDatasets(pair: str, timeframe: Union[str, list[str]], years: Optional[Union[int, list[int]]] = None) -> dict[str, pd.DataFrame]:
     if os.path.exists(f'datasets/{pair}') != True:
         os.mkdir(f'datasets/{pair}')
 
@@ -23,38 +23,38 @@ def getDatasets(pair: str, timeframe: Union[str, list[str]], year: Optional[Unio
 
     if type(timeframe) == list:
         for t in timeframe:
-            if year != None:
-                if type(year) == int:
-                    path = path + f'{year}/'
-                    fetchAndDecompress(data, pair, t, path, hdb.getKeyItems(path), hdb)
+            if years != None:
+                if type(years) == int:
+                    fetchAndDecompress(data, pair, t, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
                 else:
-                    for y in year:
-                        fetchAndDecompress(data, pair, t, path, hdb.getKeyItems(path + y), hdb)
+                    for year in years:
+                        fetchAndDecompress(data, pair, t, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
 
             else:
                 years = hdb.getKeyItems(path)
                 for year in years:
-                    fetchAndDecompress(data, pair, t, path, hdb.getKeyItems(path + year), hdb)
+                    fetchAndDecompress(data, pair, t, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
     else:
-        if year != None:
-            if type(year) == int:
-                path = path + f'{year}/'
-                fetchAndDecompress(data, pair, timeframe, path, hdb.getKeyItems(path), hdb)
+        if years != None:
+            if type(years) == int:
+                fetchAndDecompress(data, pair, timeframe, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
             else:
-                for y in year:
-                    fetchAndDecompress(data, pair, timeframe, path, hdb.getKeyItems(path + y), hdb)
+                for year in years:
+                    fetchAndDecompress(data, pair, timeframe, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
         else:
             years = hdb.getKeyItems(path)
             for year in years:
-                fetchAndDecompress(data, pair, timeframe, path, hdb.getKeyItems(path + year), hdb)
+                fetchAndDecompress(data, pair, timeframe, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
     return data
 
-def fetchAndDecompress(data: pd.DataFrame, pair: str, timeframe: str, path: str, datasets: list, hdb: historicDB) -> None:
+def fetchAndDecompress(data: pd.DataFrame, pair: str, timeframe: str, path: str, datasets: list) -> None:
     for e in datasets:
-        if str(e).__contains__(f'{pair}_{timeframe}'):
-            data[str(e).replace('.csv.gz', '')] = getDataset(path + e, f'datasets/{pair}/{str(e)}', hdb)
+        if e.__contains__(f'{pair}_{timeframe}'):
+            print(e, f'{pair}_{timeframe}')
+            data[str(e).replace('.csv.gz', '')] = getDataset(path + e, f'datasets/{pair}/{e}')
     
-def getDataset(url: str, pathToFile: str, hdb: historicDB) -> pd.DataFrame:
+def getDataset(url: str, pathToFile: str) -> pd.DataFrame:
+    hdb = historicDB()
     hdb.getItem(url, pathToFile)
     return pd.read_csv(
         pathToFile,
