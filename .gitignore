@@ -1,5 +1,7 @@
-# Core Libaries
-libs/
+# DynamicOptimizer tmp files
+datasets/
+daStrategy.html
+*.csv.gz
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

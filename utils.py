@@ -69,31 +69,20 @@ def getDataset(url: str, pathToFile: str) -> pd.DataFrame:
         compression = 'gzip'
     )
 
-def plotData(data: pd.DataFrame) -> None:
-    import plotly.graph_objects as go
-    from plotly.subplots import make_subplots
-
-    fig = go.Figure(
-        data = [go.Candlestick(
-            x = data.index,
-            open = data['Open'],
-            high = data['High'],
-            low = data['Low'],
-            close = data['Close']
-        )]
+def getInternalDataset(path: str) -> pd.DataFrame:
+    return pd.read_csv(
+        path,
+        names = [
+            'datetime',
+            'Open',
+            'High',
+            'Low',
+            'Close',
+            'Volume'
+        ],
+        compression = 'gzip'
     )
 
-    fig.update_layout(
-        autosize = False,
-        width = 600,
-        margin = dict(
-            l = 50,
-            r = 50,
-            b = 100,
-            pad = 4
-        ),
-        paper_bgcolor = 'white'
-    )
-    fig.show()
+
 
 

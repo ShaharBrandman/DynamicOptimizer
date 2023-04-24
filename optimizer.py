@@ -9,7 +9,7 @@ from backtesting import Backtest
 
 from strategy import daStrategy
 
-from utils import getDatasets, getDataset, getConfig
+from utils import getDatasets, getDataset, getConfig, getInternalDataset
 
 from bybitHTTPX import BybitClient
 
@@ -29,7 +29,7 @@ class Optimizer(Thread):
         data: Union[pd.DataFrame, dict[str, pd.DataFrame]] = None
 
         if 'DatasetPath' in self.params['Strategy']:
-            data = pd.read_csv(self.params['Strategy']['DatasetPath'])
+            data = getInternalDataset(self.params['Strategy']['DatasetPath'])
         elif 'DatasetURL' in self.params['Strategy']:
             if os.path.exists('datasets/tmp') != True:
                 os.mkdir('datasets/tmp')
@@ -46,7 +46,6 @@ class Optimizer(Thread):
             )
 
         if type(data) == pd.DataFrame:
-            from backtesting.test import GOOG
             bt = Backtest(
                 data,
                 daStrategy,
@@ -59,7 +58,7 @@ class Optimizer(Thread):
         
             print(stat)
 
-            bt.plot()
+            #bt.plot()
         else:
             for d in data:
                 bt = Backtest(
@@ -74,7 +73,7 @@ class Optimizer(Thread):
         
                 print(stat)
 
-                bt.plot()
+                #bt.plot()
 
                 a = input('[y/N]?')
                 if a.lower() == 'y':

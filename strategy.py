@@ -20,11 +20,15 @@ class daStrategy(Strategy):
         
         self.firstSMA = self.I(SMA, self.data[self.params['Source']], self.params['firstSMA'])
         self.secondSMA = self.I(SMA, self.data[self.params['Source']], self.params['secondSMA'])
-
+        
     def next(self):
+        if len(self.trades) > 0:
+            print(self.trades)
         if crossover(self.firstSMA, self.secondSMA):
+            print('long')
             self.position.close()
             self.buy()
         elif crossover(self.secondSMA, self.firstSMA):
+            print('short')
             self.position.close()
             self.sell()

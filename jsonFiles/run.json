@@ -6,7 +6,7 @@
             "secondSMA": 20
         },
         "Pair": "BTCUSDT",
-        "DatasetURL": "https://public.bybit.com/kline_for_metatrader4/BTCUSDT/2022/BTCUSDT_15_2022-09-01_2022-09-30.csv.gz"
+        "DatasetPath": "https://public.bybit.com/kline_for_metatrader4/AXSUSDT/2023/AXSUSDT_15_2023-01-01_2023-01-31.csv.gz"
     },
     "Optimizer": {
         "loops": "1"
