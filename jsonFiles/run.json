@@ -1,19 +1,38 @@
 {
     "Strategy": {
         "Params": {
-            "Source": "Close",
-            "firstSMA": 10,
-            "secondSMA": 20
+            "pivotLength": {
+                "min": 1,
+                "max": 10
+            },
+            "candlesBack":  {
+                "min": 1,
+                "max": 100
+            },
+            "takeProfitPip": {
+                "min": 10,
+                "max": 100
+            },
+            "stopLossPip": {
+                "min": 10,
+                "max": 100
+            },
+            "maxTrades": {
+                "min": 1,
+                "max": 10
+            }
         },
         "Pair": "BTCUSDT",
-        "DatasetPath": "https://public.bybit.com/kline_for_metatrader4/AXSUSDT/2023/AXSUSDT_15_2023-01-01_2023-01-31.csv.gz"
+        "DatasetPath": "https://public.bybit.com/kline_for_metatrader4/BTCUSDT/2023/BTCUSDT_5_2023-05-01_2023-05-31.csv.gz"
     },
     "Optimizer": {
-        "loops": "1"
+        "initPoints": 2,
+        "nIter": 5,
+        "maximize": "Return [%]"
     },
     "Portfolio": {
         "Equity": 50000,
         "Leverage": 1,
-        "Commision": 0.025
+        "Commision": 0.0
     }
 }

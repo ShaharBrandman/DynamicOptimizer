@@ -9,23 +9,12 @@ from backtesting import Backtest
 
 from strategy import daStrategy
 
-from utils import getDatasets, getDataset, getConfig, getInternalDataset
+from utils import getDatasets, getDataset, getConfig, getInternalDataset, saveOptimiezdParamsToJson
 
-from bybitHTTPX import BybitClient
+from bayes_opt import BayesianOptimization
 
 class Optimizer(Thread):
-    def __init__(self, params: dict) -> None:
-        c = getConfig()
-
-        '''self.client = BybitClient(
-            url = c['bybitEndpoint'],
-            apiKey = c['bybitAPIKey'],
-            apiSecret = c['bybitAPISecretKey']
-        )'''
-
-        self.params = params
-
-    def start(self) -> None:
+    def loadData(self) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
         data: Union[pd.DataFrame, dict[str, pd.DataFrame]] = None
 
         if 'DatasetPath' in self.params['Strategy']:
@@ -45,38 +34,59 @@ class Optimizer(Thread):
                 self.params['Strategy']['Year']
             )
 
-        if type(data) == pd.DataFrame:
-            bt = Backtest(
-                data,
-                daStrategy,
-                cash = self.params['Portfolio']['Equity'],
-                margin = 1 / self.params['Portfolio']['Leverage'],
-                commission = self.params['Portfolio']['Commision']
+        return data
+
+    def loadBounds(self) -> dict:
+        bounds: dict = {}
+
+        for e in self.params['Strategy']['Params']:
+            if e == 'Source':
+                continue
+            
+            bounds[e] = (
+                self.params['Strategy']['Params'][e]['min'],
+                self.params['Strategy']['Params'][e]['max']
             )
+        return bounds
+    
+    def loadBacktest(self) -> Backtest:
+        return Backtest(
+            self.data,
+            daStrategy,
+            cash = self.params['Portfolio']['Equity'],
+            margin = 1 / self.params['Portfolio']['Leverage'],
+            commission = self.params['Portfolio']['Commision']
+        )
+    
+    def blackBoxFunction(self, **params: dict) -> any:
+        saveOptimiezdParamsToJson(params)
 
-            stat = bt.run()
-        
-            print(stat)
+        self.bt = self.loadBacktest()
+        stats = self.bt.run()
 
-            #bt.plot()
-        else:
-            for d in data:
-                bt = Backtest(
-                    data[d],
-                    daStrategy,
-                    cash = self.params['Portfolio']['Equity'],
-                    margin = 1 / self.params['Portfolio']['Leverage'],
-                    commission = self.params['Portfolio']['Commision']
-                )
+        return stats[self.params['Optimizer']['maximize']]
 
-                stat = bt.run()
-        
-                print(stat)
+    def __init__(self, params: dict) -> None:
+        super().__init__()
 
-                #bt.plot()
+        self.params = params
 
-                a = input('[y/N]?')
-                if a.lower() == 'y':
-                    continue
-                else:
-                    break
+        self.data = self.loadData()
+
+    def start(self) -> None:
+        optimizer = BayesianOptimization(
+            f = self.blackBoxFunction,
+            pbounds = self.loadBounds(),
+            verbose = 2,
+            random_state = 0,
+        )
+
+        optimizer.maximize(
+            init_points = self.params['Optimizer']['initPoints'],
+            n_iter = self.params['Optimizer']['nIter']
+        )
+
+        print(optimizer.max)
+
+        for i, res in enumerate(optimizer.res):
+            print("Iteration {}: \n\t{}".format(i, res))

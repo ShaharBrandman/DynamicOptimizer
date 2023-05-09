@@ -1,1 +1,1 @@
-rm -r -f __pycache__/ logs/ output/ datasets/
+rm -r -f __pycache__/ logs/ tmp/ datasets/

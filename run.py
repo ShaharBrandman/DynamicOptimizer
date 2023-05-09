@@ -18,5 +18,8 @@ def initLogs():
 if os.path.exists('datasets') != True:
     os.mkdir('datasets')
 
+if os.path.exists('tmp') != True:
+    os.mkdir('tmp')
+
 o = Optimizer(getRunJson())
 o.start()
