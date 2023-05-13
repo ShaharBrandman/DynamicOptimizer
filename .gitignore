@@ -1,5 +1,5 @@
 # DynamicOptimizer tmp files
-datasets/
+tmp/
 daStrategy.html
 *.csv.gz
 

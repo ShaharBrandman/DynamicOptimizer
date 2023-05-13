@@ -1,1 +1,3 @@
-pip install -r requirements
+#!/bin/sh
+pip install -r requirements.txt
+git submodule update

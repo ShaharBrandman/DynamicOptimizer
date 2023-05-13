@@ -22,8 +22,8 @@
                 "max": 10
             }
         },
-        "Pair": "BTCUSDT",
-        "DatasetPath": "https://public.bybit.com/kline_for_metatrader4/BTCUSDT/2023/BTCUSDT_5_2023-05-01_2023-05-31.csv.gz"
+        "Pair": "BITUSDT",
+        "DatasetPath": "https://public.bybit.com/kline_for_metatrader4/BITUSDT/2023/BITUSDT_60_2023-05-01_2023-05-31.csv.gz"
     },
     "Optimizer": {
         "initPoints": 2,
