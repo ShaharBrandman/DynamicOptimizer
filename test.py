@@ -168,8 +168,6 @@ def savePatternToFile(df: pd.DataFrame, CANDLE_ID: str, displayCandles: int = 10
         dfpl.to_csv(f)
         f.close()
 
-c = 0
-
 df['Patterns'] = getLinearRegression(BACK_CANDLES)
 
 print(df)

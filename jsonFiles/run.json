@@ -1,29 +1,46 @@
 {
     "Strategy": {
         "Params": {
-            "pivotLength": {
+            "TAKE_PROFIT_PIPS": {
                 "min": 1,
-                "max": 10
+                "max": 250
             },
-            "candlesBack":  {
+            "STOP_LOSS_PIPS": {
+                "min": 1,
+                "max": 125
+            },
+            "PIVOT_LENGTH": {
+                "min": 1,
+                "max": 150
+            },
+            "BACK_CANDLES": {
                 "min": 1,
                 "max": 100
             },
-            "takeProfitPip": {
-                "min": 10,
-                "max": 100
+            "R_MIN_LONG": {
+                "min": -0.1,
+                "max": 0.9
             },
-            "stopLossPip": {
-                "min": 10,
-                "max": 100
+            "R_MAX_LONG": {
+                "min": -0.1,
+                "max": 0.9
             },
-            "maxTrades": {
-                "min": 1,
-                "max": 10
+            "R_MAX_SHORT": {
+                "min": -0.1,
+                "max": 0.9
+            },
+            "SL_MAX_LONG": {
+                "min": -0.00001,
+                "max": 0.001
+            },
+            "SL_MAX_SHORT": {
+                "min": -0.00001,
+                "max": 0.001
             }
+
         },
-        "Pair": "BITUSDT",
-        "DatasetPath": "https://public.bybit.com/kline_for_metatrader4/BITUSDT/2023/BITUSDT_60_2023-05-01_2023-05-31.csv.gz"
+        "Pair": "EURUSD",
+        "DatasetPath": "static/EURUSD_Candlestick_4_Hour_ASK_05.05.2003-16.10.2021.csv"
     },
     "Optimizer": {
         "initPoints": 2,
