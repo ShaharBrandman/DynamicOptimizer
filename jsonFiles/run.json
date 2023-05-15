@@ -1,13 +1,13 @@
 {
     "Strategy": {
         "Params": {
-            "TAKE_PROFIT_PIPS": {
-                "min": 1,
-                "max": 250
+            "TAKE_PROFIT_PER": {
+                "min": 0.1,
+                "max": 100.0
             },
-            "STOP_LOSS_PIPS": {
-                "min": 1,
-                "max": 125
+            "STOP_LOSS_PER": {
+                "min": 0.1,
+                "max": 100.0
             },
             "PIVOT_LENGTH": {
                 "min": 1,
@@ -25,17 +25,21 @@
                 "min": -0.1,
                 "max": 0.9
             },
+            "R_MIN_SHORT": {
+                "min": -0.9,
+                "max": 0.9
+            },
             "R_MAX_SHORT": {
                 "min": -0.1,
                 "max": 0.9
             },
             "SL_MAX_LONG": {
                 "min": -0.00001,
-                "max": 0.001
+                "max": 0.009
             },
             "SL_MAX_SHORT": {
                 "min": -0.00001,
-                "max": 0.001
+                "max": 0.009
             }
 
         },
@@ -44,11 +48,11 @@
     },
     "Optimizer": {
         "initPoints": 2,
-        "nIter": 5,
+        "nIter": 200,
         "maximize": "Return [%]"
     },
     "Portfolio": {
-        "Equity": 50000,
+        "Equity": 100,
         "Leverage": 1,
         "Commision": 0.0
     }

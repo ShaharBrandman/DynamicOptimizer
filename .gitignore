@@ -1,6 +1,11 @@
 # DynamicOptimizer tmp files
 tmp/
-daStrategy.html
+strategies/__pycache__
+strategies/tmp
+strategies/*.csv.gz
+strategies/*.html
+bybitHTTPX/__pycache__
+*.html
 *.csv.gz
 
 # Byte-compiled / optimized / DLL files

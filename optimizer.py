@@ -7,7 +7,8 @@ from threading import Thread
 
 from backtesting import Backtest
 
-from strategy import daStrategy
+#from strategy import daStrategy
+from strategies.minMaxSlopePattern import MinMaxSlopePattern
 
 from utils import getDatasets, getDataset, getConfig, getInternalDataset, saveOptimiezdParamsToJson
 
@@ -47,12 +48,13 @@ class Optimizer(Thread):
                 self.params['Strategy']['Params'][e]['min'],
                 self.params['Strategy']['Params'][e]['max']
             )
+
         return bounds
     
     def loadBacktest(self) -> Backtest:
         return Backtest(
-            self.data,
-            daStrategy,
+            data = self.data,
+            strategy = MinMaxSlopePattern,
             cash = self.params['Portfolio']['Equity'],
             margin = 1 / self.params['Portfolio']['Leverage'],
             commission = self.params['Portfolio']['Commision']
@@ -60,9 +62,12 @@ class Optimizer(Thread):
     
     def blackBoxFunction(self, **params: dict) -> any:
         saveOptimiezdParamsToJson(params)
-
+        
         self.bt = self.loadBacktest()
+        
         stats = self.bt.run()
+
+        print(stats)
 
         return stats[self.params['Optimizer']['maximize']]
 

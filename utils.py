@@ -1,5 +1,8 @@
 import os
 import json
+import time
+
+from datetime import datetime
 
 from typing import Union, Optional
 
@@ -77,24 +80,46 @@ def getDataset(url: str, pathToFile: str) -> pd.DataFrame:
         compression = 'gzip',
         index_col = 'datetime',
         parse_dates= True
+    ).astype('float')
+
+def getInternalDataset(path: str, compression: Optional[str] = None) -> pd.DataFrame:
+    '''
+    commonly used to import static files
+    '''
+    data: pd.DataFrame = None
+    
+    if compression != None:
+        data = pd.read_csv(
+            path,
+            compression = compression,
+            #index_col = 'Gmt time',
+            #parse_dates= True
+        )
+    else:
+        data =  pd.read_csv(path)
+
+    df = pd.DataFrame()
+
+    df['Open'] = data['open']
+    df['High'] = data['high']
+    df['Low'] = data['low']
+    df['Close'] = data['close']
+    df['Volume'] = data['volume']
+
+    df['datetime'] = data['Gmt time']
+    
+    df['datetime'] = df.apply(
+        lambda x: datetime.strptime(
+            df['datetime'][x.name] ,
+            "%d.%m.%Y %H:%M:%S.%f"
+        ).timestamp(), 
+        axis = 1
     )
 
-def getInternalDataset(path: str) -> pd.DataFrame:
-    return pd.read_csv(
-        path,
-        names = [
-            'datetime',
-            'Open',
-            'High',
-            'Low',
-            'Close',
-            'Volume'
-        ],
-        compression = 'gzip',
-        index_col = 'datetime',
-        parse_dates= True
-    )
-
-
-
-
+    df = df[df['Volume'] != 0]
+    
+    df.reset_index(drop = True, inplace = True)
+    
+    df.isna().sum()
+    
+    return df

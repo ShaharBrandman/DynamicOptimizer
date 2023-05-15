@@ -21,7 +21,7 @@ BACK_CANDLES = 20
 
 #df = getInternalDataset(c['Strategy']['DatasetPath'])
 
-df = pd.read_csv('EURUSD_Candlestick_4_Hour_ASK_05.05.2003-16.10.2021.csv')
+df = pd.read_csv('static/EURUSD_Candlestick_4_Hour_ASK_05.05.2003-16.10.2021.csv')
 
 df['High'] = df['high']
 df['Open'] = df['open']
@@ -192,7 +192,7 @@ def findInBoundsPatterns(df: pd.DataFrame, rMaxP: float, rMinP: float, slminP: f
                 pMin = rmin
                 pMax = rmax
                 print(rmax, rmin, slmin, slmax, i)
-                savePatternToFile(i, 10, 15)
+                savePatternToFile(df, i, 10, 15)
 
-findInBoundsPatterns(0.9, 0.9, 0.0001, 0.0001)
+findInBoundsPatterns(df, 0.9, 0.9, 0.0001, 0.0001)
         
