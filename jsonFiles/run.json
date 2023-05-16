@@ -3,43 +3,51 @@
         "Params": {
             "TAKE_PROFIT_PER": {
                 "min": 0.1,
-                "max": 100.0
+                "max": 10.0
             },
             "STOP_LOSS_PER": {
                 "min": 0.1,
-                "max": 100.0
+                "max": 2.5
             },
             "PIVOT_LENGTH": {
                 "min": 1,
-                "max": 150
+                "max": 40
             },
             "BACK_CANDLES": {
                 "min": 1,
-                "max": 100
+                "max": 40
             },
             "R_MIN_LONG": {
                 "min": -0.1,
-                "max": 0.9
+                "max": 1
             },
             "R_MAX_LONG": {
                 "min": -0.1,
-                "max": 0.9
+                "max": 1
             },
             "R_MIN_SHORT": {
-                "min": -0.9,
-                "max": 0.9
+                "min": -0.1,
+                "max": 1
             },
             "R_MAX_SHORT": {
                 "min": -0.1,
-                "max": 0.9
+                "max": 1
+            },
+            "SL_MIN_LONG": {
+                "min": -0.0001,
+                "max": 1
             },
             "SL_MAX_LONG": {
-                "min": -0.00001,
-                "max": 0.009
+                "min": -0.0001,
+                "max": 1
+            },
+            "SL_MIN_SHORT": {
+                "min": -0.0001,
+                "max": 1
             },
             "SL_MAX_SHORT": {
-                "min": -0.00001,
-                "max": 0.009
+                "min": -0.0001,
+                "max": 1
             }
 
         },
@@ -47,8 +55,8 @@
         "DatasetPath": "static/EURUSD_Candlestick_4_Hour_ASK_05.05.2003-16.10.2021.csv"
     },
     "Optimizer": {
-        "initPoints": 2,
-        "nIter": 200,
+        "initPoints": 5,
+        "nIter": 25,
         "maximize": "Return [%]"
     },
     "Portfolio": {

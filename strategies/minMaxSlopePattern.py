@@ -51,7 +51,7 @@ class MinMaxSlopePattern(Strategy):
             return 2
         else:
             return 0
-    
+
     def pointPivotPosition(self, row: pd.DataFrame) -> float:
         if row['pivot'] == 1:
             return row['Low'] -1e-3
@@ -60,8 +60,8 @@ class MinMaxSlopePattern(Strategy):
         else:
             return numpy.nan
     
-    def findInBoundsPatterns(self, df: pd.DataFrame, params: dict) -> list:
-        arr = [0] * len(df)
+    def findInBoundsPatterns(self, df: pd.DataFrame, params: dict) -> pd.Series:
+        arr: list[int] = [0] * len(df)
 
         pMin = 0
         pMax = 0
@@ -82,13 +82,14 @@ class MinMaxSlopePattern(Strategy):
 
             if abs(rmax) >= params['R_MAX_LONG'] and abs(rmin) >= params['R_MIN_LONG'] and slmin >= params['SL_MIN_LONG'] and slmax <= params['SL_MAX_LONG']:
                 arr[i] = 2
+
             elif abs(rmax) <= params['R_MIN_SHORT'] and abs(rmin) <= params['R_MIN_SHORT'] and slmin <= params['SL_MIN_SHORT'] and slmax >= params['SL_MAX_SHORT']:
                 arr[i] = 1
-    
-        return arr
+
+        return pd.Series(arr)
 
     def getLinearRegression(self, df: pd.DataFrame, BACK_CANDLES: int) -> pd.Series:
-        linreg = [None] * len(df)
+        linreg: list[any] = [None] * len(df)
 
         for candleid in range(BACK_CANDLES, len(df) - 1):
             maxSlope = numpy.array([])
@@ -97,7 +98,7 @@ class MinMaxSlopePattern(Strategy):
             minSlopeIndex = numpy.array([])
             maxSlopeIndex = numpy.array([])
 
-            for i in range(candleid-BACK_CANDLES, candleid+1):
+            for i in range(candleid - BACK_CANDLES, candleid + 1):
                 if df['pivot'][i] == 1:
                     minSlope = numpy.append(minSlope, df['Low'][i])
                     minSlopeIndex = numpy.append(minSlopeIndex, i)
@@ -157,22 +158,16 @@ class MinMaxSlopePattern(Strategy):
         #depracted:
         self.params['Source'] = 'Close'
 
-        print('==============\n')
-        print(self.params)
-        print('===============\n')
-
-        print(self.data.df)
-
-        print('==============\n')
+        #print(self.params)
+        
+        #print(self.data.df)
 
         self.signal = self.I(
             self.getSignal
         )
 
-        print('==============\n')
-        print(self.signal[self.signal != 0], f'\nlength: {len(self.signal)}')
-        print('============\n')
-    
+        #print(self.signal[self.signal != 0], f'\nlength: {len(self.signal)}')
+        
     def next(self) -> None:
         if len(self.trades) == 0:
             if self.signal[-1] == 2:
@@ -189,7 +184,6 @@ class MinMaxSlopePattern(Strategy):
 
 
                 self.sell(
-                    size = self.equity,
                     tp = tp,
                     sl = sl
                 )

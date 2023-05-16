@@ -67,8 +67,8 @@ class Optimizer(Thread):
         
         stats = self.bt.run()
 
-        print(stats)
-
+        #print(stats)
+        #print(stats[self.params['Optimizer']['maximize']])
         return stats[self.params['Optimizer']['maximize']]
 
     def __init__(self, params: dict) -> None:
@@ -83,8 +83,12 @@ class Optimizer(Thread):
             f = self.blackBoxFunction,
             pbounds = self.loadBounds(),
             verbose = 2,
-            random_state = 0,
         )
+
+        #from bayes_opt import UtilityFunction
+        #utility = UtilityFunction(kind = 'ucb', kappa = 2.5, xi = 0.0)
+
+        #optimizer.set_gp_params(alpha = 1e-3)
 
         optimizer.maximize(
             init_points = self.params['Optimizer']['initPoints'],
@@ -93,5 +97,5 @@ class Optimizer(Thread):
 
         print(optimizer.max)
 
-        for i, res in enumerate(optimizer.res):
-            print("Iteration {}: \n\t{}".format(i, res))
+        #for i, res in enumerate(optimizer.res):
+        #    print("Iteration {}: \n\t{}".format(i, res))

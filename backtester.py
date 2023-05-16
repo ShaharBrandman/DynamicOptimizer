@@ -50,19 +50,18 @@ class Backtester(Thread):
         self.params = params
 
         self.params['Strategy']['Params'] = {
-            "Source": 'Close',
-            "TAKE_PROFIT_PER": 1.5,
-            "STOP_LOSS_PER": 0.85,
-            "PIVOT_LENGTH": 3,
-            "BACK_CANDLES": 20,
-            "R_MIN_LONG": 0.9,
-            "R_MAX_LONG": 0.9,
-            "R_MIN_SHORT": -0.9,
-            "R_MAX_SHORT": -0.9,
-            "SL_MIN_LONG": 0.001,
-            "SL_MAX_LONG": 0.001,
-            "SL_MIN_SHORT": -0.0001,
-            "SL_MAX_SHORT": -0.0001
+            "TAKE_PROFIT_PER": 1.446447586383931,
+            "STOP_LOSS_PER": 4.4251353319491855,
+            "PIVOT_LENGTH": 4.297145731278758,
+            "BACK_CANDLES": 35.5843502127593,
+            "R_MIN_LONG": 0.5942546426663565,
+            "R_MAX_LONG": 0.11776539845298459,
+            "R_MIN_SHORT": -0.4205391033511241,
+            "R_MAX_SHORT": 0.7973783984383424,
+            "SL_MIN_LONG": 0.0005362551401242417,
+            "SL_MAX_LONG": 0.0008462531080675778,
+            "SL_MIN_SHORT": 0.008960442623547402,
+            "SL_MAX_SHORT": 0.0009449977347971846
         }
         
         self.data = self.loadData()
