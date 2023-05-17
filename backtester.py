@@ -53,21 +53,6 @@ class Backtester(Thread):
         
         self.params = params
 
-        '''self.params['Strategy']['Params'] = {
-            'BACK_CANDLES': 33.468569464667276,
-            'PIVOT_LENGTH': 1.524624596094434,
-            'R_MAX_LONG': 0.32244024985967457,
-            'R_MAX_SHORT': -0.0060000986784292335,
-            'R_MIN_LONG': 0.4989715648568345,
-            'R_MIN_SHORT': 0.9345467095632859,
-            'SL_MAX_LONG': 0.2909353737175032,
-            'SL_MAX_SHORT': 0.6616227784219257,
-            'SL_MIN_LONG': 0.34289550105287264,
-            'SL_MIN_SHORT': 0.5754348321299666,
-            'STOP_LOSS_PER': 4.3626871550212805,
-            'TAKE_PROFIT_PER': 1.6889425683640362
-        }'''
-
         self.data = self.loadData()
 
     def start(self) -> None:
@@ -81,15 +66,9 @@ class Backtester(Thread):
 
         print(stats)
 
-def run(params: dict) -> None:
-    if os.path.exists('datasets') != True:
-        os.mkdir('datasets')
-
-    if os.path.exists('tmp') != True:
-        os.mkdir('tmp')
-
+def runBacktest(params: dict) -> None:
     o = Backtester(params)
     o.start()
 
 if __name__ == '__main__':
-    run(getRunJson())
+    runBacktest(getRunJson())

@@ -14,8 +14,8 @@ For Long & Short
     * SLOPE_MAX - default: 0.0001, float
 
 Order Parameters:
-    * TAKE_PROFIT_PIPS - default: 100, Union[float, int]
-    * STOP_LOSS_PIPS   - default: 50, Union[float, int]
+    * TAKE_PROFIT_PER - default: 0.5, Union[float, int]
+    * STOP_LOSS_PER   - default: 0.4, Union[float, int]
     * TARGET           - default: Close, str, Options = Close, Open, High, Low 
 '''
 
@@ -155,14 +155,12 @@ class MinMaxSlopePattern(Strategy):
         self.params['PIVOT_LENGTH'] = int(self.params['PIVOT_LENGTH'])
         self.params['BACK_CANDLES'] = int(self.params['BACK_CANDLES'])
 
-        #depracted:
+        #TODO: code this feature:
         self.params['Source'] = 'Close'
 
         self.signal = self.I(
             self.getSignal
         )
-
-        #print(self.signal[self.signal != 0])
         
     def next(self) -> None:
         if len(self.trades) == 0:

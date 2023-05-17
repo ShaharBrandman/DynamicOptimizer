@@ -60,7 +60,8 @@
     "Optimizer": {
         "initPoints": 15,
         "nIter": 50,
-        "maximize": ["Win Rate [%]", "Return [%]", "# Trades"]
+        "maximize": ["Win Rate [%]", "Return [%]", "# Trades"],
+        "loadFrom": [""]
     },
     "Portfolio": {
         "Equity": 100000,

@@ -9,12 +9,14 @@ from threading import Thread
 
 from backtesting import Backtest
 
-#from strategy import daStrategy
 from strategies.minMaxSlopePattern import MinMaxSlopePattern
 
 from utils import getDatasets, getDataset, getConfig, getInternalDataset, getDatasetFromYahoo, saveOptimiezdParamsToJson
 
 from bayes_opt import BayesianOptimization
+from bayes_opt.logger import JSONLogger
+from bayes_opt.event import Events
+from bayes_opt.util import load_logs
 
 class Optimizer(Thread):
     def loadData(self) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
@@ -89,14 +91,25 @@ class Optimizer(Thread):
                 else:            
                     result += float(stats[e])
             except Exception as e:
-                print(f'{stats[e]} is not valid')
+                logging.debug(f'{stats[e]} is not valid, exception: {e}')
 
         return result / len(m)
 
-    def __init__(self, params: dict) -> None:
+    def quickSave(self) -> None:
+        self.data.to_csv(f'output/{self.runID}/DataFrame.csv')
+
+        with open(f'output/{self.runID}/Parameters.json', 'w') as w:
+            w.write(self.params)
+            w.close()
+
+    def __init__(self, params: dict, runID: str) -> None:
         super().__init__()
 
         self.params = params
+        self.runID = runID
+
+        if os.path.exists(f'output/{runID}') != True:
+            os.mkir(f'output/{runID}')
 
         self.data = self.loadData()
 
@@ -107,6 +120,11 @@ class Optimizer(Thread):
             verbose = 2,
             allow_duplicate_points = True
         )
+
+        if 'loadFrom' in self.params['Optimizer']:
+            load_logs(optimizer, logs = self.params['Optimizer']['loadFrom']);
+
+        optimizer.subscribe(Events.OPTIMIZATION_STEP, JSONLogger(path=f'logs/algorithm.log'))
 
         #from bayes_opt import UtilityFunction
         #utility = UtilityFunction(kind = 'ucb', kappa = 2.5, xi = 0.0)
@@ -120,18 +138,21 @@ class Optimizer(Thread):
 
         max = optimizer.max
 
-        print(max)
+        logging.debug(max)
 
         if max['target'] <= 0:
+            logging.debug(f'{max["target"]} is not an acceptable result, optimizng again...')
             self.start()
 
-        from backtester import run
+        from backtester import runBacktest
 
         self.params['Strategy']['Params'] = max['params']
         
         p = self.params
 
-        run(p)
+        runBacktest(p)
+
+        self.quickSave()
 
         #for i, res in enumerate(optimizer.res):
-        #    print("Iteration {}: \n\t{}".format(i, res))
+        #    logging.debug("Iteration {}: \n\t{}".format(i, res))
