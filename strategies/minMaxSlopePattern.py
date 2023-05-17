@@ -127,9 +127,9 @@ class MinMaxSlopePattern(Strategy):
         df = self.data.df
 
         df['pivot'] = df.apply( 
-            lambda x: self.getPivotPoint(
+            lambda row: self.getPivotPoint(
                 df,
-                x.name,
+                row.name,
                 self.params['PIVOT_LENGTH'],
                 self.params['PIVOT_LENGTH']
             ), 
@@ -158,15 +158,11 @@ class MinMaxSlopePattern(Strategy):
         #depracted:
         self.params['Source'] = 'Close'
 
-        #print(self.params)
-        
-        #print(self.data.df)
-
         self.signal = self.I(
             self.getSignal
         )
 
-        #print(self.signal[self.signal != 0], f'\nlength: {len(self.signal)}')
+        #print(self.signal[self.signal != 0])
         
     def next(self) -> None:
         if len(self.trades) == 0:

@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 
+import numpy
+
 from typing import Union
 
 from threading import Thread
@@ -10,7 +12,7 @@ from backtesting import Backtest
 #from strategy import daStrategy
 from strategies.minMaxSlopePattern import MinMaxSlopePattern
 
-from utils import getDatasets, getDataset, getConfig, getInternalDataset, saveOptimiezdParamsToJson
+from utils import getDatasets, getDataset, getConfig, getInternalDataset, getDatasetFromYahoo, saveOptimiezdParamsToJson
 
 from bayes_opt import BayesianOptimization
 
@@ -18,7 +20,13 @@ class Optimizer(Thread):
     def loadData(self) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
         data: Union[pd.DataFrame, dict[str, pd.DataFrame]] = None
 
-        if 'DatasetPath' in self.params['Strategy']:
+        if 'yFinance' in self.params['Strategy']:
+            data = getDatasetFromYahoo(
+                self.params['Strategy']['yFinance']['pair'],
+                self.params['Strategy']['yFinance']['period'],
+                self.params['Strategy']['yFinance']['interval']
+            )
+        elif 'DatasetPath' in self.params['Strategy']:
             data = getInternalDataset(self.params['Strategy']['DatasetPath'])
         elif 'DatasetURL' in self.params['Strategy']:
             if os.path.exists('datasets/tmp') != True:
@@ -67,9 +75,23 @@ class Optimizer(Thread):
         
         stats = self.bt.run()
 
-        #print(stats)
-        #print(stats[self.params['Optimizer']['maximize']])
-        return stats[self.params['Optimizer']['maximize']]
+        m = self.params['Optimizer']['maximize'] 
+
+        result: float = 0.0
+
+        for e in m:
+            try:
+                if str(stats[e]) == 'nan':
+                    continue
+
+                if stats[e] < 0:
+                    result -= float(stats[e]) * 4
+                else:            
+                    result += float(stats[e])
+            except Exception as e:
+                print(f'{stats[e]} is not valid')
+
+        return result / len(m)
 
     def __init__(self, params: dict) -> None:
         super().__init__()
@@ -83,19 +105,33 @@ class Optimizer(Thread):
             f = self.blackBoxFunction,
             pbounds = self.loadBounds(),
             verbose = 2,
+            allow_duplicate_points = True
         )
 
         #from bayes_opt import UtilityFunction
         #utility = UtilityFunction(kind = 'ucb', kappa = 2.5, xi = 0.0)
 
-        #optimizer.set_gp_params(alpha = 1e-3)
+        optimizer.set_gp_params(alpha = 1e-3)
 
         optimizer.maximize(
             init_points = self.params['Optimizer']['initPoints'],
             n_iter = self.params['Optimizer']['nIter']
         )
 
-        print(optimizer.max)
+        max = optimizer.max
+
+        print(max)
+
+        if max['target'] <= 0:
+            self.start()
+
+        from backtester import run
+
+        self.params['Strategy']['Params'] = max['params']
+        
+        p = self.params
+
+        run(p)
 
         #for i, res in enumerate(optimizer.res):
         #    print("Iteration {}: \n\t{}".format(i, res))

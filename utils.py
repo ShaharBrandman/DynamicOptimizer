@@ -2,6 +2,8 @@ import os
 import json
 import time
 
+import yfinance as yf
+
 from datetime import datetime
 
 from typing import Union, Optional
@@ -24,6 +26,29 @@ def saveOptimiezdParamsToJson(oParams: dict) -> None:
         f.write(json.dumps(oParams))
         f.flush()
         f.close()
+
+def getDatasetFromYahoo(pair: str, period: str, interval: str) -> pd.DataFrame:
+    if os.path.exists(f'datasets/{pair}') != True:
+        os.mkdir(f'datasets/{pair}')
+
+    try:
+        data = pd.DataFrame(yf.download(
+            tickers = pair, 
+            period = period,
+            interval = interval
+        ))
+    except yf.exceptions.YFinanceDataException as e:
+        print(f'first error: {e}')
+    except yf.exceptions.YFinanceException as e:
+        print(f'second error: {e}')
+
+    data = data[data['Volume'] != 0]
+    
+    data.reset_index(drop = True, inplace = True)
+    
+    data.isna().sum()
+
+    return data
 
 def getDatasets(pair: str, timeframe: Union[str, list[str]], years: Optional[Union[int, list[int]]] = None) -> dict[str, pd.DataFrame]:
     if os.path.exists(f'datasets/{pair}') != True:

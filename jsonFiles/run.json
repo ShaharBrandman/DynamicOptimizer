@@ -3,11 +3,11 @@
         "Params": {
             "TAKE_PROFIT_PER": {
                 "min": 0.1,
-                "max": 10.0
+                "max": 5.0
             },
             "STOP_LOSS_PER": {
                 "min": 0.1,
-                "max": 2.5
+                "max": 5.0
             },
             "PIVOT_LENGTH": {
                 "min": 1,
@@ -51,17 +51,20 @@
             }
 
         },
-        "Pair": "EURUSD",
-        "DatasetPath": "static/EURUSD_Candlestick_4_Hour_ASK_05.05.2003-16.10.2021.csv"
+        "yFinance": {
+            "pair": "BTC-USD",
+            "period": "7d",
+            "interval": "1m"
+        }
     },
     "Optimizer": {
-        "initPoints": 5,
-        "nIter": 25,
-        "maximize": "Return [%]"
+        "initPoints": 15,
+        "nIter": 50,
+        "maximize": ["Win Rate [%]", "Return [%]", "# Trades"]
     },
     "Portfolio": {
-        "Equity": 100,
+        "Equity": 100000,
         "Leverage": 1,
-        "Commision": 0.0
+        "Commision": 0.00025
     }
 }
