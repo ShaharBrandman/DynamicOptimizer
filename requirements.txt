@@ -1,8 +1,6 @@
 pandas==2.0.0
 backtesting==0.3.3
 httpx==0.24.0
-pandas_ta==0.3.14b
-matplotlib==3.7.1
 beautifulsoup4==4.12.1
 bayesian_optimization==1.4.3
 plotly==5.14.1

@@ -1,22 +1,25 @@
 import os
-import pandas as pd
-
-import numpy
+import json
+import logging
 
 from typing import Union
 
 from threading import Thread
 
+import numpy
+
+import pandas as pd
+
 from backtesting import Backtest
-
-from strategies.minMaxSlopePattern import MinMaxSlopePattern
-
-from utils import getDatasets, getDataset, getConfig, getInternalDataset, getDatasetFromYahoo, saveOptimiezdParamsToJson
 
 from bayes_opt import BayesianOptimization
 from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
 from bayes_opt.util import load_logs
+
+from strategies.minMaxSlopePattern import MinMaxSlopePattern
+
+from utils import getDatasets, getDataset, getConfig, getInternalDataset, getDatasetFromYahoo, saveOptimiezdParamsToJson
 
 class Optimizer(Thread):
     def loadData(self) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
@@ -85,11 +88,7 @@ class Optimizer(Thread):
             try:
                 if str(stats[e]) == 'nan':
                     continue
-
-                if stats[e] < 0:
-                    result -= float(stats[e]) * 4
-                else:            
-                    result += float(stats[e])
+                result += float(stats[e])
             except Exception as e:
                 logging.debug(f'{stats[e]} is not valid, exception: {e}')
 
@@ -99,7 +98,7 @@ class Optimizer(Thread):
         self.data.to_csv(f'output/{self.runID}/DataFrame.csv')
 
         with open(f'output/{self.runID}/Parameters.json', 'w') as w:
-            w.write(self.params)
+            w.write(json.dumps(self.params))
             w.close()
 
     def __init__(self, params: dict, runID: str) -> None:
@@ -109,7 +108,7 @@ class Optimizer(Thread):
         self.runID = runID
 
         if os.path.exists(f'output/{runID}') != True:
-            os.mkir(f'output/{runID}')
+            os.mkdir(f'output/{runID}')
 
         self.data = self.loadData()
 
@@ -122,12 +121,9 @@ class Optimizer(Thread):
         )
 
         if 'loadFrom' in self.params['Optimizer']:
-            load_logs(optimizer, logs = self.params['Optimizer']['loadFrom']);
+            load_logs(new_optimizer, logs = self.params['Optimizer']['loadFrom']);
 
-        optimizer.subscribe(Events.OPTIMIZATION_STEP, JSONLogger(path=f'logs/algorithm.log'))
-
-        #from bayes_opt import UtilityFunction
-        #utility = UtilityFunction(kind = 'ucb', kappa = 2.5, xi = 0.0)
+        optimizer.subscribe(Events.OPTIMIZATION_STEP, JSONLogger(path=f'logs/{self.runID}.log'))
 
         optimizer.set_gp_params(alpha = 1e-3)
 
@@ -140,19 +136,12 @@ class Optimizer(Thread):
 
         logging.debug(max)
 
-        if max['target'] <= 0:
-            logging.debug(f'{max["target"]} is not an acceptable result, optimizng again...')
-            self.start()
+        #from backtester import runBacktest
 
-        from backtester import runBacktest
-
-        self.params['Strategy']['Params'] = max['params']
+        #self.params['Strategy']['Params'] = max['params']
         
-        p = self.params
+        #p = self.params
 
-        runBacktest(p)
+        #runBacktest(p)
 
         self.quickSave()
-
-        #for i, res in enumerate(optimizer.res):
-        #    logging.debug("Iteration {}: \n\t{}".format(i, res))

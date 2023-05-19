@@ -1,4 +1,5 @@
 import os
+import logging
 import pandas as pd
 
 from typing import Union
@@ -64,7 +65,7 @@ class Backtester(Thread):
 
         self.bt.plot()
 
-        print(stats)
+        logging.debug(stats)
 
 def runBacktest(params: dict) -> None:
     o = Backtester(params)

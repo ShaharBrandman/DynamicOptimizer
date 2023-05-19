@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import logging
 
 import yfinance as yf
 
@@ -28,9 +29,6 @@ def saveOptimiezdParamsToJson(oParams: dict) -> None:
         f.close()
 
 def getDatasetFromYahoo(pair: str, period: str, interval: str) -> pd.DataFrame:
-    if os.path.exists(f'datasets/{pair}') != True:
-        os.mkdir(f'datasets/{pair}')
-
     try:
         data = pd.DataFrame(yf.download(
             tickers = pair, 
@@ -38,9 +36,9 @@ def getDatasetFromYahoo(pair: str, period: str, interval: str) -> pd.DataFrame:
             interval = interval
         ))
     except yf.exceptions.YFinanceDataException as e:
-        print(f'first error: {e}')
+        logging.debug(f'first error: {e}')
     except yf.exceptions.YFinanceException as e:
-        print(f'second error: {e}')
+        logging.debug(f'second error: {e}')
 
     data = data[data['Volume'] != 0]
     

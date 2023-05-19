@@ -53,15 +53,14 @@
         },
         "yFinance": {
             "pair": "BTC-USD",
-            "period": "7d",
-            "interval": "1m"
+            "period": "60d",
+            "interval": "5m"
         }
     },
     "Optimizer": {
         "initPoints": 15,
-        "nIter": 50,
-        "maximize": ["Win Rate [%]", "Return [%]", "# Trades"],
-        "loadFrom": [""]
+        "nIter": 300,
+        "maximize": ["Return [%]"]
     },
     "Portfolio": {
         "Equity": 100000,
