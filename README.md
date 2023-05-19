@@ -3,9 +3,10 @@
 ## execution: python3 run.py
 ## configuration:
 
-# `run.json`
+for our program to work we need a settings file
+we call it `run.json` (or just the run script of the program)
 
-The optimizer can be seprated into three components which its own settings each
+The optimizer can be seprated into three components which each has its own settings
 
 # 1. Strategy
 
