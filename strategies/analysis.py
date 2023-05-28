@@ -3,7 +3,7 @@ import pandas as pd
 
 from scipy.stats import linregress
 
-def getPivotPoint(self, df: pd.DataFrame, num: int, pivotLeft: int, pivotRight: int) -> int:
+def getPivotPoint(df: pd.DataFrame, num: int, pivotLeft: int, pivotRight: int) -> int:
     if num - pivotLeft < 0 or num + pivotRight >= len(df):
         return 0
 
@@ -23,7 +23,7 @@ def getPivotPoint(self, df: pd.DataFrame, num: int, pivotLeft: int, pivotRight: 
         else:
             return 0
 
-def pointPivotPosition(self, row: pd.DataFrame) -> float:
+def pointPivotPosition(row: pd.DataFrame) -> float:
     if row['pivot'] == 1:
         return row['Low'] -1e-3
     elif row['pivot'] == 2:
@@ -31,7 +31,7 @@ def pointPivotPosition(self, row: pd.DataFrame) -> float:
     else:
         return numpy.nan
     
-def findInBoundsPatterns(self, df: pd.DataFrame, params: dict) -> pd.Series:
+def findInBoundsPatterns(df: pd.DataFrame, params: dict) -> pd.Series:
     arr: list[int] = [0] * len(df)
 
     pMin = 0
@@ -59,7 +59,7 @@ def findInBoundsPatterns(self, df: pd.DataFrame, params: dict) -> pd.Series:
 
         return pd.Series(arr)
 
-def getLinearRegression(self, df: pd.DataFrame, BACK_CANDLES: int) -> pd.Series:
+def getLinearRegression(df: pd.DataFrame, BACK_CANDLES: int) -> pd.Series:
     linreg: list[any] = [None] * len(df)
 
     for candleid in range(BACK_CANDLES, len(df) - 1):

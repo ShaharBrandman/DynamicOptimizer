@@ -16,7 +16,7 @@ For Long & Short
 Order Parameters:
     * TAKE_PROFIT_PER - default: 0.5, Union[float, int]
     * STOP_LOSS_PER   - default: 0.4, Union[float, int]
-    * TARGET           - default: Close, str, Options = Close, Open, High, Low 
+    * TARGET          - default: Close, str, Options = Close, Open, High, Low 
 '''
 import os
 import numpy
@@ -29,7 +29,7 @@ from backtesting import Strategy
 
 from utils import getOptimizedParams
 
-from analysis import getPivotPoint, pointPivotPosition, getLinearRegression, findInBoundsPatterns
+from .analysis import getPivotPoint, pointPivotPosition, getLinearRegression, findInBoundsPatterns
 
 class MinMaxSlopePattern(Strategy):
     def getSignal(self) -> pd.Series:

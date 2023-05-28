@@ -102,6 +102,7 @@ class Optimizer(Thread):
             w.close()
 
         saveClosedTrades(
+            self.runID,
             self.bt._strategy.closed_trades,
             self.data,
             self.params
@@ -129,7 +130,7 @@ class Optimizer(Thread):
         if 'loadFrom' in self.params['Optimizer']:
             load_logs(new_optimizer, logs = self.params['Optimizer']['loadFrom']);
 
-        optimizer.subscribe(Events.OPTIMIZATION_STEP, JSONLogger(path=f'logs/{self.runID}.log'))
+        optimizer.subscribe(Events.OPTIMIZATION_STEP, JSONLogger(path=f'output/{self.runID}.log'))
 
         optimizer.set_gp_params(alpha = 1e-3)
 
@@ -142,8 +143,5 @@ class Optimizer(Thread):
 
         logging.debug(maxParams)
 
-        #from backtester import runBacktest
         self.params['Strategy']['Params'] = maxParams['params']
-        #runBacktest(self.params)
-
         self.quickSave()
