@@ -3,7 +3,9 @@ import json
 import time
 import logging
 
+import pandas as pd
 import yfinance as yf
+import plotly.graph_objects as go
 
 from datetime import datetime
 
@@ -12,6 +14,8 @@ from typing import Union, Optional
 import pandas as pd
 
 from bybitHTTPX import historicDB
+
+from strategies.analysis import getLinearRegression, getPivotPoint
 
 def getRunJson() -> dict:
     return json.loads(open('jsonFiles/run.json', 'r').read())
@@ -146,3 +150,88 @@ def getInternalDataset(path: str, compression: Optional[str] = None) -> pd.DataF
     df.isna().sum()
     
     return df
+
+def saveAndPlot(runID: str, index: int, df: pd.DataFrame) -> None:
+    fig = go.Figure(
+        data = [
+            go.Candlestick(
+                x=df.index,
+                open=df['Open'],
+                high=df['High'],
+                low=df['Low'],
+                close=df['Close']
+            )
+        ]
+    )
+
+    fig.add_scatter(
+        x=df.index,
+        y=df['pointpos'], 
+        mode="markers",
+        marker = dict(
+            size=4,
+            color="MediumPurple"
+        ),
+        name="pivot"
+    )
+
+    df['minSlopeIndex'] = np.append(df['minSlopeIndex'], df['minSlopeIndex'][-1]+15)
+    df['maxSlopeIndex'] = np.append(df['maxSlopeIndex'], df['maxSlopeIndex'][-1]+15)
+    
+    slmin, intercmin = df['minSlope']
+    slmax, intercmax = df['maxSlope']
+
+
+    fig.add_trace(
+        go.Scatter(
+            x = df['minSlopeIndex'],
+            y = slmin * df['minSlopeIndex'] + intercmin,
+            mode='lines',
+            name='min slope'
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x = df['maxSlopeIndex'],
+            y = slmax * df['maxSlopeIndex'] + intercmax,
+            mode='lines',
+            name='max slope'
+        )
+    )
+    
+    fig.update_layout(xaxis_rangeslider_visible=False)
+
+    fig.to_image(f'output/{runID}/{index}/Graph.png')
+
+def saveClosedTrades(runID: str, closedTrades: list, df: pd.DataFrame, params: dict) -> None:
+    df['pivot'] = df.apply( 
+        lambda row: getPivotPoint(
+            df,
+            row.name,
+            params['PIVOT_LENGTH'],
+            params['PIVOT_LENGTH']
+        ), 
+        axis = 1
+    )
+
+    patterns = getLinearRegression(df, params['BACK_CANDLES'])
+
+    for i in range(len(patterns)):
+        if i in closedTrades:
+            tmp = pd.DataFrame(
+                patterns[i]['minSlope'],
+                patterns[i]['maxSlope'],
+                patterns[i]['minSlopeArr'],
+                patterns[i]['maxSlopeArr'],
+                patterns[i]['minSlopeIndex'],
+                patterns[i]['maxSlopeIndex']
+            )
+
+            tmp = pd.concat(tmp, df[i - params['BACK_CANDLES']: i + 1], axis = 1)
+
+            saveAndPlot(runID, i, tmp)
+
+            tmp.save_csv(f'output/{runID}/{i}/DataFrame.csv')
+
+    #inBonudsPattern = findInBoundsPatterns(df, params)

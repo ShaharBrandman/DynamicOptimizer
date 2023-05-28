@@ -5,3 +5,4 @@ beautifulsoup4==4.12.1
 bayesian_optimization==1.4.3
 plotly==5.14.1
 kaleido==0.2.1
+scikit-learn==1.2.2

@@ -19,7 +19,7 @@ from bayes_opt.util import load_logs
 
 from strategies.minMaxSlopePattern import MinMaxSlopePattern
 
-from utils import getDatasets, getDataset, getConfig, getInternalDataset, getDatasetFromYahoo, saveOptimiezdParamsToJson
+from utils import getDatasets, getDataset, getConfig, getInternalDataset, getDatasetFromYahoo, saveOptimiezdParamsToJson, saveClosedTrades
 
 class Optimizer(Thread):
     def loadData(self) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
@@ -97,9 +97,15 @@ class Optimizer(Thread):
     def quickSave(self) -> None:
         self.data.to_csv(f'output/{self.runID}/DataFrame.csv')
 
-        with open(f'output/{self.runID}/Parameters.json', 'w') as w:
+        with open(f'output/{self.runID}/StrategyParameters.json', 'w') as w:
             w.write(json.dumps(self.params))
             w.close()
+
+        saveClosedTrades(
+            self.bt._strategy.closed_trades,
+            self.data,
+            self.params
+        )
 
     def __init__(self, params: dict, runID: str) -> None:
         super().__init__()
@@ -132,16 +138,12 @@ class Optimizer(Thread):
             n_iter = self.params['Optimizer']['nIter']
         )
 
-        max = optimizer.max
+        maxParams = optimizer.max
 
-        logging.debug(max)
+        logging.debug(maxParams)
 
         #from backtester import runBacktest
-
-        #self.params['Strategy']['Params'] = max['params']
-        
-        #p = self.params
-
-        #runBacktest(p)
+        self.params['Strategy']['Params'] = maxParams['params']
+        #runBacktest(self.params)
 
         self.quickSave()
