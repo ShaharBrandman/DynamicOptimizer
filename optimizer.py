@@ -130,7 +130,7 @@ class Optimizer(Thread):
         if 'loadFrom' in self.params['Optimizer']:
             load_logs(new_optimizer, logs = self.params['Optimizer']['loadFrom']);
 
-        optimizer.subscribe(Events.OPTIMIZATION_STEP, JSONLogger(path=f'output/{self.runID}.log'))
+        optimizer.subscribe(Events.OPTIMIZATION_STEP, JSONLogger(path=f'output/{self.runID}/progress'))
 
         optimizer.set_gp_params(alpha = 1e-3)
 

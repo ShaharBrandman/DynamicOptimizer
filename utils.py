@@ -215,6 +215,11 @@ def saveClosedTrades(runID: str, closedTrades: list, df: pd.DataFrame, params: d
         axis = 1
     )
 
+    df['pointpos'] = df.apply(
+        lambda row: pointPivotPosition(row),
+        axis = 1
+    )
+
     patterns = getLinearRegression(df, params['BACK_CANDLES'])
 
     for i in range(len(patterns)):

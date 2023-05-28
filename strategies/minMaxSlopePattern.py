@@ -45,11 +45,6 @@ class MinMaxSlopePattern(Strategy):
             axis = 1
         )
 
-        #df['pointpos'] = df.apply(
-        #    lambda row: pointPivotPosition(row),
-        #    axis = 1
-        #)
-
         df['Patterns'] = getLinearRegression(df, self.params['BACK_CANDLES'])
         
         inBonudsPattern = findInBoundsPatterns(df, self.params)

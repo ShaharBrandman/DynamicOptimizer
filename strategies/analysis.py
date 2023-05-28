@@ -57,7 +57,7 @@ def findInBoundsPatterns(df: pd.DataFrame, params: dict) -> pd.Series:
         elif abs(rmax) <= params['R_MIN_SHORT'] and abs(rmin) <= params['R_MIN_SHORT'] and slmin <= params['SL_MIN_SHORT'] and slmax >= params['SL_MAX_SHORT']:
             arr[i] = 1
 
-        return pd.Series(arr)
+    return pd.Series(arr)
 
 def getLinearRegression(df: pd.DataFrame, BACK_CANDLES: int) -> pd.Series:
     linreg: list[any] = [None] * len(df)
