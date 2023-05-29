@@ -19,13 +19,17 @@ def initLogs():
 
     logging.info(f'Running {os.getcwd()}/run.py')
 
-if os.path.exists('output') != True:
-    os.mkdir('output')
+def initMain():
+    if os.path.exists('output') != True:
+        os.mkdir('output')
 
-if os.path.exists('tmp') != True:
-    os.mkdir('tmp')
+    if os.path.exists('tmp') != True:
+        os.mkdir('tmp')
 
-initLogs()
+    initLogs()
 
-o = Optimizer(getRunJson(), runID)
-o.start()
+    o = Optimizer(getRunJson(), runID)
+    o.start()
+
+if __name__ == '__main__':
+    initMain()
