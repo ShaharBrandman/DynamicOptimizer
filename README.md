@@ -2,6 +2,15 @@
 
 ## execution: `python3 run.py ..args`
 ## help menu: `python3 run.py --help`
+
+## Installation:
+
+`python3 -m venv myenv`
+`pip install -r requirements`
+`nuitka run.py`
+`chmod +x run` (Optional)
+`./run`
+
 ## configuration:
 
 # `run.json`

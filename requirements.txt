@@ -7,3 +7,4 @@ plotly==5.14.1
 kaleido==0.2.1
 scikit-learn==1.2.2
 yfinance=0.2.20
+nuitka==1.6.3
