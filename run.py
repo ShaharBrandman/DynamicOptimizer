@@ -83,7 +83,7 @@ def initCLI() -> dict:
 
     return runJson, runID
 
-def initMain(runJson: dict) -> None:
+def initMain() -> None:
     if os.path.exists('output') != True:
         os.mkdir('output')
 

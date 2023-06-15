@@ -1,6 +1,7 @@
 ## How to run?
 
-## execution: python3 run.py ..args
+## execution: `python3 run.py ..args`
+## help menu: `python3 run.py --help`
 ## configuration:
 
 # `run.json`

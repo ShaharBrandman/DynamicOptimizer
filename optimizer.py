@@ -34,10 +34,7 @@ class Optimizer(Thread):
         elif 'DatasetPath' in self.params['Strategy']:
             data = getInternalDataset(self.params['Strategy']['DatasetPath'])
         elif 'DatasetURL' in self.params['Strategy']:
-            data = getDataset(
-                self.params['Strategy']['DatasetURL'],
-                'dtmp/tmpDf.csv.gz'
-            )
+            data = getDataset(self.params['Strategy']['DatasetURL'])
         else:
             data = getDatasets(
                 self.params['Strategy']['Pair'],

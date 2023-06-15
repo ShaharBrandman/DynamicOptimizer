@@ -13,8 +13,6 @@ from typing import Union, Optional
 
 import pandas as pd
 
-from bybitHTTPX import historicDB
-
 from strategies.analysis import getLinearRegression, getPivotPoint
 
 '''
@@ -94,11 +92,9 @@ def fetchAndAppend(data: pd.DataFrame, pair: str, timeframe: str, path: str, dat
         if e.__contains__(f'{pair}_{timeframe}'):
             data[str(e).replace('.csv.gz', '')] = getDataset(path + e, f'datasets/{pair}/{e}')
     
-def getDataset(url: str, pathToFile: str) -> pd.DataFrame:
-    hdb = historicDB()
-    hdb.getItem(url, pathToFile)
+def getDataset(url: str) -> pd.DataFrame:
     return pd.read_csv(
-        pathToFile,
+        url,
         names = [
             'datetime',
             'Open',
