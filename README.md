@@ -5,11 +5,11 @@
 
 ## Installation:
 
-`python3 -m venv myenv`
-`pip install -r requirements`
-`nuitka run.py`
-`chmod +x run` (Optional)
-`./run`
+* `python3 -m venv myenv`
+* `pip install -r requirements`
+* `nuitka run.py`
+* `chmod +x run` (Optional)
+* `./run`
 
 ## configuration:
 
