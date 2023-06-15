@@ -59,7 +59,7 @@
     },
     "Optimizer": {
         "initPoints": 15,
-        "nIter": 5,
+        "nIter": 1,
         "maximize": ["Return [%]"]
     },
     "Portfolio": {

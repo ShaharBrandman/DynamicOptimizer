@@ -1,11 +1,13 @@
 ## How to run?
 
-## execution: python3 run.py
+## execution: python3 run.py ..args
 ## configuration:
 
 # `run.json`
 
 The optimizer can be seprated into three components which its own settings each
+
+this is just an example of how It would look like
 
 # 1. Strategy
 
@@ -85,7 +87,7 @@ the run json should look like this:
     "Optimizer": {
         "initPoints": 15, How many steps of random exploration you want to perform, the more steps the more diversified exploration space
         "nIter": 300, #How many steps of bayesian optimization you want to perform
-        "maximize": ["Return [%]"] #Can be every result param of the `backtesting.py` python module
+        "maximize": "Return [%]" #Can be every result param of the `backtesting.py` python module
     }
 }
 ```

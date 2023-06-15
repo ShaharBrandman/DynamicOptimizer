@@ -17,12 +17,15 @@ from bybitHTTPX import historicDB
 
 from strategies.analysis import getLinearRegression, getPivotPoint
 
+'''
+depracted features
+
 def getRunJson() -> dict:
     return json.loads(open('jsonFiles/run.json', 'r').read())
 
 def getConfig() -> dict:
     return json.loads(open('jsonFiles/config.json', 'r').read())
-
+'''
 def getOptimizedParams() -> dict:
     return json.loads(open('tmp/optimizedParams.json', 'r').read())
 

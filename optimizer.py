@@ -19,7 +19,7 @@ from bayes_opt.util import load_logs
 
 from strategies.minMaxSlopePattern import MinMaxSlopePattern
 
-from utils import getDatasets, getDataset, getConfig, getInternalDataset, getDatasetFromYahoo, saveOptimiezdParamsToJson, saveClosedTrades
+from utils import getDatasets, getDataset, getInternalDataset, getDatasetFromYahoo, saveOptimiezdParamsToJson, saveClosedTrades
 
 class Optimizer(Thread):
     def loadData(self) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
@@ -34,12 +34,9 @@ class Optimizer(Thread):
         elif 'DatasetPath' in self.params['Strategy']:
             data = getInternalDataset(self.params['Strategy']['DatasetPath'])
         elif 'DatasetURL' in self.params['Strategy']:
-            if os.path.exists('datasets/tmp') != True:
-                os.mkdir('datasets/tmp')
-
             data = getDataset(
                 self.params['Strategy']['DatasetURL'],
-                'datasets/tmp/tmpDf.csv.gz'
+                'dtmp/tmpDf.csv.gz'
             )
         else:
             data = getDatasets(
@@ -74,32 +71,25 @@ class Optimizer(Thread):
         )
     
     def blackBoxFunction(self, **params: dict) -> any:
+        for p in params:
+            self.runID += f"-{p}-{params[p]['min']}-{params[p]['max']}"
+
         saveOptimiezdParamsToJson(params)
         
         self.bt = self.loadBacktest()
         
         stats = self.bt.run()
 
-        m = self.params['Optimizer']['maximize'] 
-
-        result: float = 0.0
-
-        for e in m:
-            try:
-                if str(stats[e]) == 'nan':
-                    continue
-                result += float(stats[e])
-            except Exception as e:
-                logging.debug(f'{stats[e]} is not valid, exception: {e}')
-
-        return result / len(m)
-
+        return float(stats[self.params['Optimizer']['maximize']])
+        
     def quickSave(self) -> None:
         self.data.to_csv(f'output/{self.runID}/DataFrame.csv')
 
         with open(f'output/{self.runID}/StrategyParameters.json', 'w') as w:
             w.write(json.dumps(self.params))
             w.close()
+
+        #print(self.params)
 
         saveClosedTrades(
             self.runID,
