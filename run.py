@@ -31,7 +31,7 @@ def initCLI() -> dict:
     parser.add_argument('-e', '--equity', type=int, help='Portfolio equity', required = True)
     parser.add_argument('-l', '--leverage', type=int, help='Portfolio leverage', required = True)
     parser.add_argument('-c', '--commission', type=float, help='Portfolio commission', required = True)
-    parser.add_argument('s', '--show', action = 'store_true', help = 'show successful trades?', required = False)
+    parser.add_argument('-s', '--show', action = 'store_true', help = 'show successful trades?', required = False)
 
     # Parse the arguments
     args = parser.parse_args()
