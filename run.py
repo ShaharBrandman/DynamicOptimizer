@@ -2,6 +2,8 @@ import os
 import argparse
 import logging
 
+from time import perf_counter
+
 from datetime import datetime
 
 from optimizer import Optimizer
@@ -22,7 +24,7 @@ def initLogs(runID: str) -> None:
 def initCLI() -> dict:
     parser = argparse.ArgumentParser(description='DynamicOptimizer Configuration')
 
-    parser.add_argument('-sp', '--strategy_params', metavar='KEY=VALUES', nargs='?', help='Strategy parameters')
+    parser.add_argument('-sp', '--strategy_params', metavar='KEY=VALUES', nargs='*', help='Strategy parameters')
     parser.add_argument('-u', '--url', help='Dataset URL', required = False)
     parser.add_argument('-p', '--path', help='Dataset Path', required = False)
     parser.add_argument('-yf', '--yfinance', metavar='KEY=VALUE', nargs='+', help='yFinance settings', required = False)
@@ -38,28 +40,30 @@ def initCLI() -> dict:
     # Parse the arguments
     args = parser.parse_args()
 
-    runJson = {}
+    runJson = {
+        'Strategy': {},
+        'Optimizer': {},
+        'Portfolio': {}
+    }
 
     #config params duh
     #inside if statement just for t variable to be locally
-    if args.strategy_params:
+    '''if args.strategy_params:
         t = {}
         for param in args.strategy_params:
             key, values = param.split('=')
             t[key] = [float(value) for value in values.split(',')]
-        runJson['Strategy']['Params'] = t
+        runJson['Strategy']['Params'] = t'''
 
     if args.strategy_params:
         t = {}
-        params = args.strategy_params.split('=')
-
-        values = [float(value) for value in params[1].split(',')]
-
-        if len(values) == 2:
-            t[params[0]] = {'min': values[0], 'max': values[1]}
-        else:
-            parser.error(f'Strategy Parameters must include a Max and Min value')
-
+        for param in args.strategy_params:
+            key, values = param.split('=')
+            values = [float(value) for value in values.split(',')]
+            if len(values) == 2:
+                t[key] = {'min': values[0], 'max': values[1]}
+            else:
+                parser.error(f'Strategy Parameters must include a Max and Min value')
         runJson['Strategy']['Params'] = t
 
     runID = ''
@@ -95,14 +99,16 @@ def initCLI() -> dict:
     runJson['Optimizer']['maximize'] = args.maximize
 
     #config portfolio
-    runJson['Portoflio']['Equity'] = args.equity
-    runJson['Portoflio']['Leverage'] = args.leverage
-    runJson['Portoflio']['Commision'] = args.commision
+    runJson['Portfolio']['Equity'] = args.equity
+    runJson['Portfolio']['Leverage'] = args.leverage
+    runJson['Portfolio']['Commision'] = args.commission
 
     return runJson, runID
 
-lru_cache(maxsize = None)
+@lru_cache(maxsize = None)
 def initMain() -> None:
+    start = perf_counter()
+
     if os.path.exists('output') != True:
         os.mkdir('output')
 
@@ -115,6 +121,12 @@ def initMain() -> None:
 
     o = Optimizer(runJson, runID)
     o.start()
+
+    end = time.perf_counter()
+
+    logging.debug(f'{runID} start: {start}')
+    logging.debug(f'{runID} end: {end}')
+    logging.debug(f'{runID} stopped optimizing at {end - start}')
 
 if __name__ == '__main__':
     initMain()

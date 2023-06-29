@@ -69,7 +69,7 @@ class Optimizer(Thread):
     
     def blackBoxFunction(self, **params: dict) -> any:
         for p in params:
-            self.runID += f"-{p}-{params[p]['min']}-{params[p]['max']}"
+            self.runID += f"-{p}-{params[p]}"
 
         saveOptimiezdParamsToJson(params)
         
