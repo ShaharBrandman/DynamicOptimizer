@@ -203,7 +203,7 @@ def saveAndPlot(runID: str, index: int, df: pd.DataFrame) -> None:
 
     fig.to_image(f'output/{runID}/{index}/Graph.png')
 
-def saveClosedTrades(runID: str, closedTrades: list, df: pd.DataFrame, params: dict) -> None:
+def saveClosedTrades(runID: str, closedTrades: list, df: pd.DataFrame, params: dict, show: Optional = False) -> None:
     df['pivot'] = df.apply( 
         lambda row: getPivotPoint(
             df,
@@ -221,21 +221,29 @@ def saveClosedTrades(runID: str, closedTrades: list, df: pd.DataFrame, params: d
 
     patterns = getLinearRegression(df, params['BACK_CANDLES'])
 
+    dataset = pd.DataFrame({
+        'exhibits': [],
+        'signals': []
+    })
+
     for i in range(len(patterns)):
-        if i in closedTrades:
-            tmp = pd.DataFrame(
-                patterns[i]['minSlope'],
-                patterns[i]['maxSlope'],
-                patterns[i]['minSlopeArr'],
-                patterns[i]['maxSlopeArr'],
-                patterns[i]['minSlopeIndex'],
-                patterns[i]['maxSlopeIndex']
-            )
+        tmp = pd.DataFrame(
+            patterns[i]['minSlope'],
+            patterns[i]['maxSlope'],
+            patterns[i]['minSlopeArr'],
+            patterns[i]['maxSlopeArr'],
+            patterns[i]['minSlopeIndex'],
+            patterns[i]['maxSlopeIndex']
+        )
 
-            tmp = pd.concat(tmp, df[i - params['BACK_CANDLES']: i + 1], axis = 1)
+        tmp = pd.concat(tmp, df[i - params['BACK_CANDLES']: i + 1], axis = 1)
 
+        if show:
             saveAndPlot(runID, i, tmp)
 
-            tmp.save_csv(f'output/{runID}/{i}/DataFrame.csv')
+        dataset['exhibits'].append(tmp)
+        dataset['signals'].append(i in closedTrades)
+
+    dataset.save_csv(f'output/{runID}/Dataset.csv') 
 
     #inBonudsPattern = findInBoundsPatterns(df, params)

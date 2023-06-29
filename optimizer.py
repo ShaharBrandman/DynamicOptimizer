@@ -80,7 +80,7 @@ class Optimizer(Thread):
         return float(stats[self.params['Optimizer']['maximize']])
         
     def quickSave(self) -> None:
-        self.data.to_csv(f'output/{self.runID}/DataFrame.csv')
+        #self.data.to_csv(f'output/{self.runID}/DataFrame.csv')
 
         with open(f'output/{self.runID}/StrategyParameters.json', 'w') as w:
             w.write(json.dumps(self.params))
@@ -92,7 +92,8 @@ class Optimizer(Thread):
             self.runID,
             self.bt._strategy.closed_trades,
             self.data,
-            self.params
+            self.params,
+            True if self.params['Optimizer']['show'] else False
         )
 
     def __init__(self, params: dict, runID: str) -> None:

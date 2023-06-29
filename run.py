@@ -20,7 +20,6 @@ def initLogs(runID: str) -> None:
 def initCLI() -> dict:
     parser = argparse.ArgumentParser(description='DynamicOptimizer Configuration')
 
-    # Add arguments
     parser.add_argument('-sp', '--strategy_params', metavar='KEY=VALUES', nargs='+', help='Strategy parameters')
     parser.add_argument('-u', '--url', help='Dataset URL', required = False)
     parser.add_argument('-p', '--path', help='Dataset Path', required = False)
@@ -32,6 +31,7 @@ def initCLI() -> dict:
     parser.add_argument('-e', '--equity', type=int, help='Portfolio equity', required = True)
     parser.add_argument('-l', '--leverage', type=int, help='Portfolio leverage', required = True)
     parser.add_argument('-c', '--commission', type=float, help='Portfolio commission', required = True)
+    parser.add_argument('s', '--show', action = 'store_true', help = 'show successful trades?', required = False)
 
     # Parse the arguments
     args = parser.parse_args()
@@ -71,6 +71,9 @@ def initCLI() -> dict:
     #config the optimizer
     if args.optimizer_file:
         runJson['Optimzer']['loadFrom'] = args.optimizerfile
+
+    if args.show:
+        runJson['Optimizer']['show'] = True
 
     runJson['Optimizer']['initPoints'] = args.init_points
     runJson['Optimizer']['nIter'] = args.n_iter
