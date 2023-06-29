@@ -6,6 +6,8 @@ from datetime import datetime
 
 from optimizer import Optimizer
 
+from functools import lru_cache
+
 runID: str = ''
 
 def initLogs(runID: str) -> None:
@@ -86,6 +88,7 @@ def initCLI() -> dict:
 
     return runJson, runID
 
+lru_cache(maxsize = None)
 def initMain() -> None:
     if os.path.exists('output') != True:
         os.mkdir('output')
