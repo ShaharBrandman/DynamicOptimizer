@@ -68,9 +68,6 @@ class Optimizer(Thread):
         )
     
     def blackBoxFunction(self, **params: dict) -> any:
-        for p in params:
-            self.runID += f"-{p}-{params[p]}"
-
         saveOptimiezdParamsToJson(params)
         
         self.bt = self.loadBacktest()
@@ -85,8 +82,6 @@ class Optimizer(Thread):
         with open(f'output/{self.runID}/StrategyParameters.json', 'w') as w:
             w.write(json.dumps(self.params))
             w.close()
-
-        #print(self.params)
 
         saveClosedTrades(
             self.runID,
