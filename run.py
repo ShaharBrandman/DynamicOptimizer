@@ -22,10 +22,10 @@ def initLogs(runID: str) -> None:
 def initCLI() -> dict:
     parser = argparse.ArgumentParser(description='DynamicOptimizer Configuration')
 
-    parser.add_argument('-sp', '--strategy_params', metavar='KEY=VALUES', nargs='+', help='Strategy parameters')
+    parser.add_argument('-sp', '--strategy_params', metavar='KEY=VALUES', nargs='?', help='Strategy parameters')
     parser.add_argument('-u', '--url', help='Dataset URL', required = False)
     parser.add_argument('-p', '--path', help='Dataset Path', required = False)
-    parser.add_argument('-y', '--yfinance', metavar='KEY=VALUE', nargs='+', help='yFinance settings', required = False)
+    parser.add_argument('-yf', '--yfinance', metavar='KEY=VALUE', nargs='+', help='yFinance settings', required = False)
     parser.add_argument('-of', '--optimizer_file', help='path Optimizer progress json file', required = False)
     parser.add_argument('-i', '--init_points', type=int, help='Number of initial exploration steps', required = True)
     parser.add_argument('-n', '--n_iter', type=int, help='Number of Bayesian optimization steps', required = True)
@@ -47,6 +47,19 @@ def initCLI() -> dict:
         for param in args.strategy_params:
             key, values = param.split('=')
             t[key] = [float(value) for value in values.split(',')]
+        runJson['Strategy']['Params'] = t
+
+    if args.strategy_params:
+        t = {}
+        params = args.strategy_params.split('=')
+
+        values = [float(value) for value in params[1].split(',')]
+
+        if len(values) == 2:
+            t[params[0]] = {'min': values[0], 'max': values[1]}
+        else:
+            parser.error(f'Strategy Parameters must include a Max and Min value')
+
         runJson['Strategy']['Params'] = t
 
     runID = ''

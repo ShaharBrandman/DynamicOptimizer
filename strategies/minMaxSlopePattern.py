@@ -2,8 +2,8 @@
 MinMaxSlopePattern Strategy is a technical analysis autumation to find Pivot points
 which are the lowest of highest points in a timeseries from X candles left and Y candles right
 given parameters like:
-    * PIVOT_LENGTH - default: 3, float
-    * BACK_CANDLES - default: 20, float
+    * PIVOT_LENGTH - default: 3, int
+    * BACK_CANDLES - default: 20, int
 those design the processing of the dataframe (we optimize those as well)
 
 Finding Patterns Parameters:

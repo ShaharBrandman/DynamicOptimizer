@@ -1,0 +1,10 @@
+#!/bin/sh
+./run.bin
+-sp PIVOT_LENGTH=1,150 BACK_CANDLES=1,150 R_MAX=0.0001,0.9 R_MIN=0.0001,0.9 SLOPE_MIN=0.0001,0.9 SLOPE_MAX=0.0001,0.9 TAKE_PROFIT_PER=0.1,5 STOP_LOSS_PER=0.1,2.5
+-yf pair=BTC-USD period=60d interval=5m
+-i 15
+-n 300
+-m 'Return [%]'
+-e 100000
+-l 1
+-c 0.00025

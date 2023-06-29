@@ -1,2 +1,1 @@
-rm -r -f __pycache__/ logs/ tmp/ output strategies/__pycache__
-rm -f *.html
+rm -rf __pycache__/ logs/ tmp/ output strategies/__pycache__ *.html *.bin *.build
