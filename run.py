@@ -8,20 +8,22 @@ from datetime import datetime
 
 from optimizer import Optimizer
 
-from functools import lru_cache
-
-runID: str = ''
-
 def initLogs(runID: str) -> None:
-    logging.basicConfig(filename=f'output/{runID}.logs',
-                            filemode='a',
-                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S',
-                            level=logging.DEBUG)
+    logging.basicConfig(
+        filename=f'output/{runID}/progress.logs',
+        filemode='a',
+        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        level=logging.DEBUG
+    )
+
+    logging.getLogger('DynamicOptimizer')
 
     logging.info(f'Running {os.getcwd()}/run.py')
 
 def initCLI() -> dict:
+    runID = ''
+
     parser = argparse.ArgumentParser(description='DynamicOptimizer Configuration')
 
     parser.add_argument('-sp', '--strategy_params', metavar='KEY=VALUES', nargs='*', help='Strategy parameters')
@@ -47,14 +49,6 @@ def initCLI() -> dict:
     }
 
     #config params duh
-    #inside if statement just for t variable to be locally
-    '''if args.strategy_params:
-        t = {}
-        for param in args.strategy_params:
-            key, values = param.split('=')
-            t[key] = [float(value) for value in values.split(',')]
-        runJson['Strategy']['Params'] = t'''
-
     if args.strategy_params:
         t = {}
         for param in args.strategy_params:
@@ -65,8 +59,6 @@ def initCLI() -> dict:
             else:
                 parser.error(f'Strategy Parameters must include a Max and Min value')
         runJson['Strategy']['Params'] = t
-
-    runID = ''
 
     #config data source
     if args.url:
@@ -89,10 +81,12 @@ def initCLI() -> dict:
 
     #config the optimizer
     if args.optimizer_file:
-        runJson['Optimzer']['loadFrom'] = args.optimizerfile
+        runJson['Optimizer']['loadFrom'] = args.optimizerfile
 
     if args.show:
         runJson['Optimizer']['show'] = True
+    else:
+        runJson['Optimizer']['show'] = False
 
     runJson['Optimizer']['initPoints'] = args.init_points
     runJson['Optimizer']['nIter'] = args.n_iter
@@ -103,9 +97,10 @@ def initCLI() -> dict:
     runJson['Portfolio']['Leverage'] = args.leverage
     runJson['Portfolio']['Commision'] = args.commission
 
+    logging.debug(f'{runID} - CLI arguments: {runJson}')
+
     return runJson, runID
 
-@lru_cache(maxsize = None)
 def initMain() -> None:
     start = perf_counter()
 
@@ -116,13 +111,22 @@ def initMain() -> None:
         os.mkdir('tmp')
 
     runJson, runID = initCLI()
+    print(runID)
+
+    if os.path.exists(f'output/{runID}') != True:
+        logging.debug(f'{runID} - created output dir')
+        os.mkdir(f'output/{runID}')
+
+    if os.path.exists(f'output/{runID}/graphs') != True:
+        logging.debug(f'{runID} - created output dir for graphs')
+        os.mkdir(f'output/{runID}/graphs')
 
     initLogs(runID)
 
     o = Optimizer(runJson, runID)
     o.start()
 
-    end = time.perf_counter()
+    end = perf_counter()
 
     logging.debug(f'{runID} start: {start}')
     logging.debug(f'{runID} end: {end}')

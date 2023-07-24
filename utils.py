@@ -4,6 +4,7 @@ import time
 import logging
 
 import pandas as pd
+import numpy as np
 import yfinance as yf
 import plotly.graph_objects as go
 
@@ -13,7 +14,7 @@ from typing import Union, Optional
 
 import pandas as pd
 
-from strategies.analysis import getLinearRegression, getPivotPoint
+from strategies.analysis import getLinearRegression, getPivotPoint, pointPivotPosition, findInBoundsPatterns
 
 '''
 depracted features
@@ -51,40 +52,6 @@ def getDatasetFromYahoo(pair: str, period: str, interval: str) -> pd.DataFrame:
     
     data.isna().sum()
 
-    return data
-
-def getDatasets(pair: str, timeframe: Union[str, list[str]], years: Optional[Union[int, list[int]]] = None) -> dict[str, pd.DataFrame]:
-    if os.path.exists(f'datasets/{pair}') != True:
-        os.mkdir(f'datasets/{pair}')
-
-    hdb = historicDB()
-    path = hdb.KLINE_FOR_METATRADER4 + pair + '/'
-    data: dict = {}
-
-    if type(timeframe) == list:
-        for t in timeframe:
-            if years != None:
-                if type(years) == int:
-                    fetchAndAppend(data, pair, t, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
-                else:
-                    for year in years:
-                        fetchAndAppend(data, pair, t, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
-
-            else:
-                years = hdb.getKeyItems(path)
-                for year in years:
-                    fetchAndAppend(data, pair, t, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
-    else:
-        if years != None:
-            if type(years) == int:
-                fetchAndAppend(data, pair, timeframe, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
-            else:
-                for year in years:
-                    fetchAndAppend(data, pair, timeframe, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
-        else:
-            years = hdb.getKeyItems(path)
-            for year in years:
-                fetchAndAppend(data, pair, timeframe, path + f'{year}/', hdb.getKeyItems(path + f'{year}/'))
     return data
 
 def fetchAndAppend(data: pd.DataFrame, pair: str, timeframe: str, path: str, datasets: list) -> None:
@@ -150,7 +117,7 @@ def getInternalDataset(path: str, compression: Optional[str] = None) -> pd.DataF
     
     return df
 
-def saveAndPlot(runID: str, index: int, df: pd.DataFrame) -> None:
+def saveGraphByIndex(runID: str, index: int, df: pd.DataFrame) -> None:
     fig = go.Figure(
         data = [
             go.Candlestick(
@@ -201,15 +168,20 @@ def saveAndPlot(runID: str, index: int, df: pd.DataFrame) -> None:
     
     fig.update_layout(xaxis_rangeslider_visible=False)
 
-    fig.to_image(f'output/{runID}/{index}/Graph.png')
+    if os.path.exists(f'output/{runID}/graphs/{index}') != True:
+        os.mkdir(f'output/{runID}/graphs/{index}')
 
-def saveClosedTrades(runID: str, closedTrades: list, df: pd.DataFrame, params: dict, show: Optional = False) -> None:
+    fig.to_image(f'output/{runID}/graphs/{index}/Graph.png')
+
+def savePatterns(runID: str, df: pd.DataFrame, params: dict, show: Optional[bool] = False) -> None:
+    logging.debug(f'{runID} - start recalucating patterns')
+
     df['pivot'] = df.apply( 
         lambda row: getPivotPoint(
             df,
             row.name,
-            params['PIVOT_LENGTH'],
-            params['PIVOT_LENGTH']
+            int(params['PIVOT_LENGTH']),
+            int(params['PIVOT_LENGTH'])
         ), 
         axis = 1
     )
@@ -219,31 +191,19 @@ def saveClosedTrades(runID: str, closedTrades: list, df: pd.DataFrame, params: d
         axis = 1
     )
 
-    patterns = getLinearRegression(df, params['BACK_CANDLES'])
+    df['Patterns'] = getLinearRegression(df, int(params['BACK_CANDLES']))
 
-    dataset = pd.DataFrame({
-        'exhibits': [],
-        'signals': []
-    })
+    df['inBonudsPattern'] = findInBoundsPatterns(df, params)
 
-    for i in range(len(patterns)):
-        tmp = pd.DataFrame(
-            patterns[i]['minSlope'],
-            patterns[i]['maxSlope'],
-            patterns[i]['minSlopeArr'],
-            patterns[i]['maxSlopeArr'],
-            patterns[i]['minSlopeIndex'],
-            patterns[i]['maxSlopeIndex']
-        )
+    logging.debug(f'{runID} - done calculating patterns')
 
-        tmp = pd.concat(tmp, df[i - params['BACK_CANDLES']: i + 1], axis = 1)
+    for i in range(len(df['Patterns'])):
+        saveGraphByIndex(runID, i, df)
 
-        if show:
-            saveAndPlot(runID, i, tmp)
+    df.save_csv(f'output/{runID}/Dataset.csv') 
 
-        dataset['exhibits'].append(tmp)
-        dataset['signals'].append(i in closedTrades)
+    logging.debug(f'{runID} - saved trades in: output/{runID}/Dataset.csv')
 
-    dataset.save_csv(f'output/{runID}/Dataset.csv') 
 
-    #inBonudsPattern = findInBoundsPatterns(df, params)
+
+

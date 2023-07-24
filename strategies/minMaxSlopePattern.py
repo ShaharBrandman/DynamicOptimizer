@@ -68,6 +68,7 @@ class MinMaxSlopePattern(Strategy):
         
     def next(self) -> None:
         if len(self.trades) == 0:
+            # long
             if self.signal[-1] == 2:
                 tp = float((self.data[self.params['Source']][-1] * (100 + self.params['TAKE_PROFIT_PER'])) / 100)
                 sl = float((self.data[self.params['Source']][-1] * (100 - self.params['STOP_LOSS_PER'])) / 100)
@@ -76,6 +77,7 @@ class MinMaxSlopePattern(Strategy):
                     tp = tp,
                     sl = sl
                 )
+            # short
             elif self.signal[-1] == 1:
                 tp = float((self.data[self.params['Source']][-1] * (100 - self.params['TAKE_PROFIT_PER'])) / 100)
                 sl = float((self.data[self.params['Source']][-1] * (100 + self.params['STOP_LOSS_PER'])) / 100)
