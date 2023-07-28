@@ -112,7 +112,7 @@ class Optimizer(Thread):
             logging.debug(f'{self.runID} - saved Best Strategy Results in: output/{self.runID}/backtestResults.txt')
 
         with open(f'output/{self.runID}/TradeResults.txt', 'w') as w:
-            w.write(self.closedTrades)
+            w.write(self.closedTrades.to_string())
             w.close()
             logging.debug(f'{self.runID} - saved Best Strategy Trade Results in: output/{self.runID}/TradeResults.txt')
 
