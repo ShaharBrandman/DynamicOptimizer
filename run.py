@@ -131,6 +131,7 @@ def initMain() -> None:
     logging.debug(f'{runID} start: {start}')
     logging.debug(f'{runID} end: {end}')
     logging.debug(f'{runID} stopped optimizing at {end - start}')
+    print(f'{runID} stopped optimizing at {end - start}')
 
 if __name__ == '__main__':
     initMain()

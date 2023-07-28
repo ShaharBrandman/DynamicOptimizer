@@ -113,6 +113,7 @@ class Optimizer(Thread):
         savePatterns(
             self.runID,
             self.data,
+            self.bt._results['_trades'],
             self.params['Strategy']['Params']
         )
 

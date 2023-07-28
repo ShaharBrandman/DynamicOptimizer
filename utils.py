@@ -12,9 +12,9 @@ from datetime import datetime
 
 from typing import Union, Optional
 
-import pandas as pd
-
 from strategies.analysis import getLinearRegression, getPivotPoint, pointPivotPosition, findInBoundsPatterns
+
+from scipy.stats import linregress
 
 '''
 depracted features
@@ -117,64 +117,50 @@ def getInternalDataset(path: str, compression: Optional[str] = None) -> pd.DataF
     
     return df
 
-def saveGraphByIndex(runID: str, index: int, df: pd.DataFrame) -> None:
-    fig = go.Figure(
-        data = [
-            go.Candlestick(
-                x=df.index,
-                open=df['Open'],
-                high=df['High'],
-                low=df['Low'],
-                close=df['Close']
-            )
-        ]
-    )
+def saveGraphByIndex(runID: str, index: int, backCandles: int, previewNum: int, df: pd.DataFrame) -> None:
+    slmin, intercmin, rmin, pmin, semin = df['Patterns'][index]['minSlope']
+    slmax, intercmax, rmax, pmax, semax = df['Patterns'][index]['maxSlope']
 
-    fig.add_scatter(
-        x=df.index,
-        y=df['pointpos'], 
-        mode="markers",
-        marker = dict(
-            size=4,
-            color="MediumPurple"
-        ),
-        name="pivot"
-    )
+    minSlopeIndex = df['Patterns'][index]['minSlopeIndex']
+    maxSlopeIndex = df['Patterns'][index]['maxSlopeIndex']
 
-    df['minSlopeIndex'] = np.append(df['minSlopeIndex'], df['minSlopeIndex'][-1]+15)
-    df['maxSlopeIndex'] = np.append(df['maxSlopeIndex'], df['maxSlopeIndex'][-1]+15)
-    
-    slmin, intercmin = df['minSlope']
-    slmax, intercmax = df['maxSlope']
+    dfpl = df[index-backCandles-previewNum:index+backCandles+previewNum]
 
+    fig = go.Figure(data=[go.Candlestick(x=dfpl.index,
+                    open=dfpl['Open'],
+                    high=dfpl['High'],
+                    low=dfpl['Low'],
+                    close=dfpl['Close'])])
 
-    fig.add_trace(
-        go.Scatter(
-            x = df['minSlopeIndex'],
-            y = slmin * df['minSlopeIndex'] + intercmin,
-            mode='lines',
-            name='min slope'
-        )
-    )
+    fig.add_scatter(x=dfpl.index, y=dfpl['pointpos'], mode="markers",
+                    marker=dict(size=4, color="MediumPurple"),
+                    name="pivot")
 
-    fig.add_trace(
-        go.Scatter(
-            x = df['maxSlopeIndex'],
-            y = slmax * df['maxSlopeIndex'] + intercmax,
-            mode='lines',
-            name='max slope'
-        )
-    )
-    
+    #-------------------------------------------------------------------------
+    # Fitting intercepts to meet highest or lowest candle point in time slice
+    #adjintercmin = df.low.loc[candleid-backcandles:candleid].min() - slmin*df.low.iloc[candleid-backcandles:candleid].idxmin()
+    #adjintercmax = df.high.loc[candleid-backcandles:candleid].max() - slmax*df.high.iloc[candleid-backcandles:candleid].idxmax()
+
+    minSlopeIndex = np.append(minSlopeIndex, minSlopeIndex[-1]+15)
+    maxSlopeIndex = np.append(maxSlopeIndex, maxSlopeIndex[-1]+15)
+    #fig.add_trace(go.Scatter(x=xxmin, y=slmin*xxmin + adjintercmin, mode='lines', name='min slope'))
+    #fig.add_trace(go.Scatter(x=xxmax, y=slmax*xxmax + adjintercmax, mode='lines', name='max slope'))
+
+    fig.add_trace(go.Scatter(x=minSlopeIndex, y=slmin*minSlopeIndex + intercmin, mode='lines', name='min slope'))
+    fig.add_trace(go.Scatter(x=maxSlopeIndex, y=slmax*maxSlopeIndex + intercmax, mode='lines', name='max slope'))
     fig.update_layout(xaxis_rangeslider_visible=False)
 
     if os.path.exists(f'output/{runID}/graphs/{index}') != True:
         os.mkdir(f'output/{runID}/graphs/{index}')
 
-    fig.to_image(f'output/{runID}/graphs/{index}/Graph.png')
+    fig.write_image(f'output/{runID}/graphs/{index}/Graph.png')
+    dfpl.to_csv(f'output/{runID}/graphs/{index}/DataFrame.csv')
 
-def savePatterns(runID: str, df: pd.DataFrame, params: dict, show: Optional[bool] = False) -> None:
+def savePatterns(runID: str, closedTrades: list, df: pd.DataFrame, params: dict, show: Optional[bool] = False) -> None:
     logging.debug(f'{runID} - start recalucating patterns')
+
+    for e in closedTrades:
+        print(e)
 
     df['pivot'] = df.apply( 
         lambda row: getPivotPoint(
@@ -193,14 +179,19 @@ def savePatterns(runID: str, df: pd.DataFrame, params: dict, show: Optional[bool
 
     df['Patterns'] = getLinearRegression(df, int(params['BACK_CANDLES']))
 
-    df['inBonudsPattern'] = findInBoundsPatterns(df, params)
-
     logging.debug(f'{runID} - done calculating patterns')
 
     for i in range(len(df['Patterns'])):
-        saveGraphByIndex(runID, i, df)
-
-    df.save_csv(f'output/{runID}/Dataset.csv') 
+        if i in closedTrades:
+            saveGraphByIndex(
+                runID,
+                i,
+                10,
+                20,
+                df
+            )
+    
+    df.to_csv(f'output/{runID}/Dataset.csv') 
 
     logging.debug(f'{runID} - saved trades in: output/{runID}/Dataset.csv')
 
