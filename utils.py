@@ -159,9 +159,6 @@ def saveGraphByIndex(runID: str, index: int, backCandles: int, previewNum: int, 
 def savePatterns(runID: str, closedTrades: list, df: pd.DataFrame, params: dict, show: Optional[bool] = False) -> None:
     logging.debug(f'{runID} - start recalucating patterns')
 
-    for e in closedTrades:
-        print(e)
-
     df['pivot'] = df.apply( 
         lambda row: getPivotPoint(
             df,
@@ -182,7 +179,7 @@ def savePatterns(runID: str, closedTrades: list, df: pd.DataFrame, params: dict,
     logging.debug(f'{runID} - done calculating patterns')
 
     for i in range(len(df['Patterns'])):
-        if i in closedTrades:
+        if i in closedTrades['EntryBar']:
             saveGraphByIndex(
                 runID,
                 i,

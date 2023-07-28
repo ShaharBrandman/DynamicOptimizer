@@ -93,7 +93,8 @@ class Optimizer(Thread):
         # Optimizer shit, not apart of the function calculation
         if (self.max == None) or (self.max <= maxValue):
             self.max = maxValue
-            self.bt = backtest
+            self.backtestResults = backtest._results
+            self.closedTrades = stats['_trades']
 
         return maxValue
         
@@ -105,15 +106,20 @@ class Optimizer(Thread):
             w.close()
             logging.debug(f'{self.runID} - saved Best Strategy Params in: output/{self.runID}/StrategyParameters.json')
 
-        with open(f'output/{self.runID}/Results.txt', 'w') as w:
-            w.write(str(self.bt._results))
+        with open(f'output/{self.runID}/backtestResults.txt', 'w') as w:
+            w.write(str(self.backtestResults))
             w.close()
-            logging.debug(f'{self.runID} - saved Best Strategy Results in: output/{self.runID}/Results.txt')
+            logging.debug(f'{self.runID} - saved Best Strategy Results in: output/{self.runID}/backtestResults.txt')
+
+        with open(f'output/{self.runID}/TradeResults.txt', 'w') as w:
+            w.write(self.closedTrades)
+            w.close()
+            logging.debug(f'{self.runID} - saved Best Strategy Trade Results in: output/{self.runID}/TradeResults.txt')
 
         savePatterns(
             self.runID,
             self.data,
-            self.bt._results['_trades'],
+            self.closedTrades,
             self.params['Strategy']['Params']
         )
 
@@ -124,8 +130,11 @@ class Optimizer(Thread):
 
         self.params = params
         self.runID = runID
+
         self.max = None
-        self.bt = None
+
+        self.backtestResults = None
+        self.closedTrades = None
 
         logging.debug(f'initilzed optimizer, ID: {runID}')
         logging.debug(f'optimizer params: {self.params}')
@@ -164,7 +173,9 @@ class Optimizer(Thread):
 
         logging.debug(f'{self.runID} - max params: {maxParams}')
 
-        logging.debug(f'{self.runID} - max results: {self.bt._results}')
+        logging.debug(f'{self.runID} - max results: {self.backtestResults}')
+
+        logging.debug(f'{self.runID} - max trade resuts: {self.closedTrades}')
 
         self.params['Strategy']['Params'] = maxParams['params']
         self.quickSave()
